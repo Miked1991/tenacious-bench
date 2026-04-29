@@ -113,7 +113,7 @@ pip install nltk scikit-learn numpy
   year         = {2026},
   month        = {April},
   institution  = {10 Academy / TRP1},
-  license      = {CC-BY-4.0},
+   
   note         = {250 tasks across 10 failure categories derived from the Tenacious Conversion Engine probe library}
 }
 ```
