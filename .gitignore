@@ -1,0 +1,86 @@
+# Tenacious-Bench v0.1 .gitignore
+
+# Held-out partition (sealed for final evaluation)
+tenacious_bench_v0.1/held_out/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+venv/
+ENV/
+env/
+.venv
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb
+
+# Data files (large)
+*.pkl
+*.pickle
+*.h5
+*.hdf5
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+*.tmp
+*.temp
+.tmp/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Credentials (if any)
+.env
+.env.local
+secrets.json
+
+# Model checkpoints (if any)
+checkpoints/
+models/
+
+# Colab notebooks
+*.ipynb_checkpoints
+
+# HuggingFace cache
+.cache/
+huggingface_cache/
+
+# Specific to this project
+# Held-out partition must be sealed
+tenacious_bench_v0.1/held_out/tasks.jsonl

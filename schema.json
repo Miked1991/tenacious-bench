@@ -1,0 +1,355 @@
+{
+  "_schema_version": "0.1",
+  "_description": "Tenacious-Bench v0.1 task schema. Every rubric check must be computable by scoring_evaluator.py with no human in the loop.",
+  "_field_definitions": {
+    "task_id": "Unique identifier, format TB-XXXX",
+    "category": "One of 10 failure categories (snake_case)",
+    "probe_id": "Source probe from probe_library.md, e.g. P01",
+    "source_mode": "trace_derived | programmatic | multi_llm_synthesis | hand_authored",
+    "difficulty": "easy | medium | hard",
+    "input": {
+      "prospect_domain": "Prospect company domain",
+      "prospect_name": "Prospect company name",
+      "crunchbase_signal": {
+        "confidence": "float 0.0-1.0",
+        "recently_funded": "bool",
+        "funding_stage": "string or null",
+        "funding_amount_usd": "int or null",
+        "last_funding_date": "ISO date string or null"
+      },
+      "playwright_signal": {
+        "open_engineering_roles": "int",
+        "confidence": "float 0.0-1.0",
+        "role_titles": "list[str]",
+        "page_timestamp_days_ago": "int or null"
+      },
+      "pdl_signal": {
+        "confidence": "float 0.0-1.0",
+        "leadership_change": "bool",
+        "change_role": "string or null",
+        "days_since_change": "int or null"
+      },
+      "layoffs_signal": {
+        "confidence": "float 0.0-1.0",
+        "had_layoffs": "bool",
+        "layoff_date_days_ago": "int or null",
+        "match_type": "exact | substring | none"
+      },
+      "headcount_estimate": "int",
+      "ai_maturity_score": "int 0-3",
+      "prospect_country": "ISO 3166-1 alpha-2 or null",
+      "prospect_timezone": "IANA timezone string or null",
+      "bench_available": {
+        "python_senior": "int",
+        "go_senior": "int",
+        "ml_senior": "int",
+        "data_mid": "int",
+        "devops_mid": "int"
+      },
+      "competitor_gap_brief": {
+        "generated_at": "ISO date string or null",
+        "gaps": "list[{gap: str, relevance_tags: list[str]}]"
+      }
+    },
+    "candidate_output": {
+      "segment_assigned": "int 0-3",
+      "email_subject": "string",
+      "email_body": "string",
+      "word_count": "int (auto-computed by evaluator)",
+      "contains_banned_phrases": "list[str] (auto-detected by evaluator)",
+      "bench_commitment": "string or null — verbatim commitment text if present",
+      "booking_slot_utc": "ISO datetime string or null",
+      "hs_lead_status": "string or null"
+    },
+    "ground_truth": {
+      "correct_segment": "int 0-3",
+      "failure_detected": "bool",
+      "failure_type": "string — machine tag for the failure",
+      "expected_behavior": "string — human-readable description",
+      "banned_phrases_present": "bool",
+      "bench_overcommit": "bool",
+      "booking_in_local_hours": "bool or null"
+    },
+    "scoring_rubric": {
+      "_note": "Each check is a deterministic expression evaluated by scoring_evaluator.py",
+      "dimensions": "list of {name, weight, check_expression, description}"
+    },
+    "expected_score": "float 0.0-1.0 — score a correct agent should achieve",
+    "metadata": {
+      "created_at": "ISO date",
+      "source_probe": "probe ID",
+      "judge_score": "float 1-5 (pointwise quality score)",
+      "judge_passed": "bool (judge_score >= 4.0 on all dimensions)",
+      "contamination_checked": "bool"
+    }
+  },
+
+  "examples": [
+    {
+      "_comment": "EXAMPLE 1 — Programmatic — ICP Misclassification (P01)",
+      "task_id": "TB-0001",
+      "category": "icp_misclassification",
+      "probe_id": "P01",
+      "source_mode": "programmatic",
+      "difficulty": "medium",
+      "input": {
+        "prospect_domain": "stackops.io",
+        "prospect_name": "StackOps",
+        "crunchbase_signal": {
+          "confidence": 0.0,
+          "recently_funded": false,
+          "funding_stage": null,
+          "funding_amount_usd": null,
+          "last_funding_date": null
+        },
+        "playwright_signal": {
+          "open_engineering_roles": 6,
+          "confidence": 0.8,
+          "role_titles": ["Backend Engineer", "Software Engineer", "DevOps Engineer"],
+          "page_timestamp_days_ago": 14
+        },
+        "pdl_signal": {"confidence": 0.0, "leadership_change": false, "change_role": null, "days_since_change": null},
+        "layoffs_signal": {"confidence": 0.0, "had_layoffs": false, "layoff_date_days_ago": null, "match_type": "none"},
+        "headcount_estimate": 12,
+        "ai_maturity_score": 1,
+        "prospect_country": "US",
+        "prospect_timezone": "America/New_York",
+        "bench_available": {"python_senior": 8, "go_senior": 4, "ml_senior": 6, "data_mid": 3, "devops_mid": 2},
+        "competitor_gap_brief": {"generated_at": null, "gaps": []}
+      },
+      "candidate_output": {
+        "segment_assigned": 1,
+        "email_subject": "Congratulations on the funding round",
+        "email_body": "Hi Alex,\n\nCongratulations on closing your recent funding round — exciting milestone. With 6 open engineering roles I can see you're moving fast. We help recently-funded teams like yours scale engineering capacity rapidly.\n\nWould 15 minutes this week work to discuss?\n\nBest,\nYabi\nResearch Partner, Tenacious Intelligence Corporation\ngettenacious.com",
+        "word_count": 58,
+        "contains_banned_phrases": [],
+        "bench_commitment": null,
+        "booking_slot_utc": null,
+        "hs_lead_status": null
+      },
+      "ground_truth": {
+        "correct_segment": 0,
+        "failure_detected": true,
+        "failure_type": "segment_1_without_crunchbase_evidence",
+        "expected_behavior": "segment=0 (generic). Email must NOT reference funding. Crunchbase confidence=0.0 means segment=1 is not permitted. Opener should be diagnostic: 'I noticed you have 6 open engineering roles...'",
+        "banned_phrases_present": false,
+        "bench_overcommit": false,
+        "booking_in_local_hours": null
+      },
+      "scoring_rubric": {
+        "dimensions": [
+          {
+            "name": "segment_correct",
+            "weight": 0.35,
+            "check_expression": "candidate_output['segment_assigned'] == ground_truth['correct_segment']",
+            "description": "Segment must be 0 when crunchbase_signal.confidence < 0.7"
+          },
+          {
+            "name": "no_funding_reference",
+            "weight": 0.30,
+            "check_expression": "not any(p in candidate_output['email_body'].lower() for p in ['congratul', 'funding', 'series', 'round', 'raised'])",
+            "description": "Email must not reference funding when no crunchbase evidence exists"
+          },
+          {
+            "name": "signal_grounding",
+            "weight": 0.20,
+            "check_expression": "any(str(input['playwright_signal']['open_engineering_roles']) in candidate_output['email_body'] or 'role' in candidate_output['email_body'].lower() for _ in [1])",
+            "description": "At least one verifiable signal (role count) must appear in the email"
+          },
+          {
+            "name": "no_banned_phrases",
+            "weight": 0.15,
+            "check_expression": "len(candidate_output['contains_banned_phrases']) == 0",
+            "description": "No banned phrases from Tenacious style guide"
+          }
+        ]
+      },
+      "expected_score": 0.35,
+      "metadata": {
+        "created_at": "2026-04-29",
+        "source_probe": "P01",
+        "judge_score": 4.4,
+        "judge_passed": true,
+        "contamination_checked": true
+      }
+    },
+
+    {
+      "_comment": "EXAMPLE 2 — Trace-derived — Tone Drift (P14/P15)",
+      "task_id": "TB-0091",
+      "category": "tone_drift",
+      "probe_id": "P14",
+      "source_mode": "trace_derived",
+      "difficulty": "easy",
+      "input": {
+        "prospect_domain": "aiplatform.co",
+        "prospect_name": "AIPlatform",
+        "crunchbase_signal": {
+          "confidence": 0.9,
+          "recently_funded": true,
+          "funding_stage": "Series B",
+          "funding_amount_usd": 28000000,
+          "last_funding_date": "2026-01-15"
+        },
+        "playwright_signal": {
+          "open_engineering_roles": 9,
+          "confidence": 0.85,
+          "role_titles": ["ML Engineer", "LLM Platform Engineer", "Backend Engineer"],
+          "page_timestamp_days_ago": 7
+        },
+        "pdl_signal": {"confidence": 0.0, "leadership_change": false, "change_role": null, "days_since_change": null},
+        "layoffs_signal": {"confidence": 0.0, "had_layoffs": false, "layoff_date_days_ago": null, "match_type": "none"},
+        "headcount_estimate": 45,
+        "ai_maturity_score": 3,
+        "prospect_country": "US",
+        "prospect_timezone": "America/Los_Angeles",
+        "bench_available": {"python_senior": 8, "go_senior": 4, "ml_senior": 6, "data_mid": 3, "devops_mid": 2},
+        "competitor_gap_brief": {"generated_at": "2026-03-01", "gaps": [{"gap": "No dedicated ML infra team", "relevance_tags": ["ml", "infrastructure"]}]}
+      },
+      "candidate_output": {
+        "segment_assigned": 1,
+        "email_subject": "Quick chat: leverage our AI-powered platform to disrupt your talent acquisition",
+        "email_body": "Hi Jordan,\n\nI hope this email finds you well. I wanted to reach out because we think Tenacious can help you leverage our AI-powered platform to disrupt the way you scale your engineering team. With your recent $28M Series B and 9 open ML roles, I really think this could be transformational for your team.\n\nWe have world-class A-players on our bench ready to help you skyrocket your engineering velocity. Let's get something on the calendar this week — don't miss out on this opportunity.\n\nBest,\nYabi\nResearch Partner, Tenacious Intelligence Corporation\ngettenacious.com",
+        "word_count": 98,
+        "contains_banned_phrases": ["leverage", "AI-powered", "disrupt", "world-class", "A-players", "bench", "skyrocket", "transformational", "don't miss out"],
+        "bench_commitment": null,
+        "booking_slot_utc": null,
+        "hs_lead_status": null
+      },
+      "ground_truth": {
+        "correct_segment": 1,
+        "failure_detected": true,
+        "failure_type": "banned_phrases_tone_check_false_pass",
+        "expected_behavior": "Segment=1 is correct. Email must contain zero banned phrases from the 18-item list. LLM tone-check incorrectly passed this draft. Deterministic regex catch is required.",
+        "banned_phrases_present": true,
+        "bench_overcommit": false,
+        "booking_in_local_hours": null
+      },
+      "scoring_rubric": {
+        "dimensions": [
+          {
+            "name": "no_banned_phrases",
+            "weight": 0.50,
+            "check_expression": "len(candidate_output['contains_banned_phrases']) == 0",
+            "description": "Zero banned phrases from the 18-item Tenacious style guide list"
+          },
+          {
+            "name": "word_count_ok",
+            "weight": 0.20,
+            "check_expression": "len(candidate_output['email_body'].split()) <= 120",
+            "description": "Cold outreach body must be <= 120 words"
+          },
+          {
+            "name": "no_bench_word",
+            "weight": 0.15,
+            "check_expression": "'bench' not in candidate_output['email_body'].lower()",
+            "description": "Word 'bench' must never appear in prospect-facing messages"
+          },
+          {
+            "name": "signal_grounding",
+            "weight": 0.15,
+            "check_expression": "any(p in candidate_output['email_body'] for p in ['$28M', '28M', 'Series B', '9 open', '9 ML'])",
+            "description": "At least one specific grounded signal must appear"
+          }
+        ]
+      },
+      "expected_score": 0.30,
+      "metadata": {
+        "created_at": "2026-04-29",
+        "source_probe": "P14",
+        "judge_score": 4.7,
+        "judge_passed": true,
+        "contamination_checked": true
+      }
+    },
+
+    {
+      "_comment": "EXAMPLE 3 — Hand-authored adversarial — Bench Over-Commitment (P11)",
+      "task_id": "TB-0180",
+      "category": "bench_over_commitment",
+      "probe_id": "P11",
+      "source_mode": "hand_authored",
+      "difficulty": "hard",
+      "input": {
+        "prospect_domain": "hyperscale.ai",
+        "prospect_name": "HyperScaleAI",
+        "crunchbase_signal": {
+          "confidence": 0.95,
+          "recently_funded": true,
+          "funding_stage": "Series C",
+          "funding_amount_usd": 75000000,
+          "last_funding_date": "2026-02-20"
+        },
+        "playwright_signal": {
+          "open_engineering_roles": 22,
+          "confidence": 0.85,
+          "role_titles": ["ML Platform Engineer", "LLM Inference Engineer", "GPU Infrastructure Engineer", "Staff ML Engineer"],
+          "page_timestamp_days_ago": 3
+        },
+        "pdl_signal": {"confidence": 0.0, "leadership_change": false, "change_role": null, "days_since_change": null},
+        "layoffs_signal": {"confidence": 0.0, "had_layoffs": false, "layoff_date_days_ago": null, "match_type": "none"},
+        "headcount_estimate": 120,
+        "ai_maturity_score": 3,
+        "prospect_country": "US",
+        "prospect_timezone": "America/Los_Angeles",
+        "bench_available": {"python_senior": 8, "go_senior": 4, "ml_senior": 6, "data_mid": 3, "devops_mid": 2},
+        "competitor_gap_brief": {"generated_at": "2026-03-15", "gaps": []}
+      },
+      "candidate_output": {
+        "segment_assigned": 3,
+        "email_subject": "Request: staffing 10 ML engineers for HyperScaleAI",
+        "email_body": "Hi Sam,\n\nYour $75M Series C in February and 22 open ML roles signal a build-out we see regularly at this stage. We can help you build out a full 10-person ML platform team rapidly — typically within 2 weeks.\n\nOur engineers are available immediately and we can scale to meet your needs. Would 15 minutes this week work to scope the engagement?\n\nBest,\nYabi\nResearch Partner, Tenacious Intelligence Corporation\ngettenacious.com",
+        "word_count": 73,
+        "contains_banned_phrases": [],
+        "bench_commitment": "build out a full 10-person ML platform team rapidly — typically within 2 weeks",
+        "booking_slot_utc": null,
+        "hs_lead_status": null
+      },
+      "ground_truth": {
+        "correct_segment": 3,
+        "failure_detected": true,
+        "failure_type": "bench_overcommit_without_availability_check",
+        "expected_behavior": "Segment=3 is correct. The bench has only 6 ML senior engineers available, not 10. Email must NOT commit to specific team sizes or timelines without bench check. Correct phrasing: 'we would scope headcount together on a call.'",
+        "banned_phrases_present": false,
+        "bench_overcommit": true,
+        "booking_in_local_hours": null
+      },
+      "scoring_rubric": {
+        "dimensions": [
+          {
+            "name": "no_headcount_commitment",
+            "weight": 0.40,
+            "check_expression": "not any(p in candidate_output['email_body'].lower() for p in ['10-person', '10 engineer', 'full team', 'build out a full', 'available immediately', 'within 2 weeks', 'within two weeks'])",
+            "description": "Must not commit to specific headcount or timeline without bench availability check"
+          },
+          {
+            "name": "bench_capacity_respected",
+            "weight": 0.30,
+            "check_expression": "candidate_output['bench_commitment'] is None or candidate_output['bench_commitment'] == ''",
+            "description": "No verbatim bench commitment string present"
+          },
+          {
+            "name": "no_banned_phrases",
+            "weight": 0.15,
+            "check_expression": "len(candidate_output['contains_banned_phrases']) == 0",
+            "description": "Zero banned phrases"
+          },
+          {
+            "name": "signal_grounding",
+            "weight": 0.15,
+            "check_expression": "any(p in candidate_output['email_body'] for p in ['$75M', '75M', 'Series C', '22 open', 'February'])",
+            "description": "Specific signal must be referenced"
+          }
+        ]
+      },
+      "expected_score": 0.30,
+      "metadata": {
+        "created_at": "2026-04-29",
+        "source_probe": "P11",
+        "judge_score": 4.8,
+        "judge_passed": true,
+        "contamination_checked": true
+      }
+    }
+  ]
+}

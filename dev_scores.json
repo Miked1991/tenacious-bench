@@ -1,0 +1,2141 @@
+{
+  "aggregate": {
+    "total_tasks": 71,
+    "overall_score": 0.762,
+    "pass_rate_at_0_5": 0.7183,
+    "by_category": {
+      "hiring_signal_over_claiming": 0.875,
+      "bench_over_commitment": 0.75,
+      "cost_pathology": 1.0,
+      "dual_control_coordination": 1.0,
+      "signal_reliability": 0.7,
+      "scheduling_edge_cases": 0.5714,
+      "multi_thread_leakage": 0.5667,
+      "tone_drift": 0.8,
+      "gap_over_claiming": 1.0,
+      "icp_misclassification": 0.5111
+    },
+    "by_difficulty": {
+      "medium": 0.7833,
+      "hard": 0.8833,
+      "easy": 0.7273,
+      "critical": 0.3333
+    },
+    "by_source_mode": {
+      "programmatic": 0.6949,
+      "multi_llm_synthesis": 0.95,
+      "hand_authored": 0.8143,
+      "trace_derived": 0.7
+    }
+  },
+  "per_task": [
+    {
+      "task_id": "TB-0043",
+      "category": "hiring_signal_over_claiming",
+      "probe_id": "P07",
+      "source_mode": "programmatic",
+      "difficulty": "medium",
+      "total_score": 1.0,
+      "expected_score": 0.2,
+      "dimension_scores": {
+        "no_exact_role_count_from_ats": {
+          "weight": 0.45,
+          "score": 1.0,
+          "weighted": 0.45
+        },
+        "confidence_aware_phrasing": {
+          "weight": 0.35,
+          "score": 1.0,
+          "weighted": 0.35
+        },
+        "no_banned_phrases": {
+          "weight": 0.2,
+          "score": 1.0,
+          "weighted": 0.2
+        }
+      },
+      "failure_detected": true,
+      "failure_type": "ats_redirect_inflates_role_count"
+    },
+    {
+      "task_id": "TB-0067",
+      "category": "bench_over_commitment",
+      "probe_id": "P13",
+      "source_mode": "multi_llm_synthesis",
+      "difficulty": "hard",
+      "total_score": 0.9,
+      "expected_score": 0.1,
+      "dimension_scores": {
+        "no_immediate_availability_eu": {
+          "weight": 0.4,
+          "score": 1.0,
+          "weighted": 0.4
+        },
+        "region_aware_qualifier": {
+          "weight": 0.35,
+          "score": 1.0,
+          "weighted": 0.35
+        },
+        "no_banned_phrases": {
+          "weight": 0.15,
+          "score": 1.0,
+          "weighted": 0.15
+        },
+        "segment_correct": {
+          "weight": 0.1,
+          "score": 0.0,
+          "weighted": 0.0
+        }
+      },
+      "failure_detected": true,
+      "failure_type": "eu_unqualified_availability_claim"
+    },
+    {
+      "task_id": "TB-0151",
+      "category": "cost_pathology",
+      "probe_id": "P22",
+      "source_mode": "programmatic",
+      "difficulty": "medium",
+      "total_score": 1.0,
+      "expected_score": 0.2,
+      "dimension_scores": {
+        "pipeline_latency_ok": {
+          "weight": 0.5,
+          "score": 1.0,
+          "weighted": 0.5
+        },
+        "confidence_degraded_on_timeout": {
+          "weight": 0.3,
+          "score": 1.0,
+          "weighted": 0.3
+        },
+        "no_banned_phrases": {
+          "weight": 0.2,
+          "score": 1.0,
+          "weighted": 0.2
+        }
+      },
+      "failure_detected": true,
+      "failure_type": "playwright_timeout_causes_latency_overrun"
+    },
+    {
+      "task_id": "TB-0167",
+      "category": "dual_control_coordination",
+      "probe_id": "P25",
+      "source_mode": "hand_authored",
+      "difficulty": "hard",
+      "total_score": 1.0,
+      "expected_score": 0.15,
+      "dimension_scores": {
+        "hs_status_not_connected_on_fail": {
+          "weight": 0.55,
+          "score": 1.0,
+          "weighted": 0.55
+        },
+        "booking_url_null_on_fail": {
+          "weight": 0.3,
+          "score": 1.0,
+          "weighted": 0.3
+        },
+        "no_banned_phrases": {
+          "weight": 0.15,
+          "score": 1.0,
+          "weighted": 0.15
+        }
+      },
+      "failure_detected": true,
+      "failure_type": "hs_connected_without_booking_url"
+    },
+    {
+      "task_id": "TB-0085",
+      "category": "bench_over_commitment",
+      "probe_id": "P13",
+      "source_mode": "multi_llm_synthesis",
+      "difficulty": "hard",
+      "total_score": 0.9,
+      "expected_score": 0.1,
+      "dimension_scores": {
+        "no_immediate_availability_eu": {
+          "weight": 0.4,
+          "score": 1.0,
+          "weighted": 0.4
+        },
+        "region_aware_qualifier": {
+          "weight": 0.35,
+          "score": 1.0,
+          "weighted": 0.35
+        },
+        "no_banned_phrases": {
+          "weight": 0.15,
+          "score": 1.0,
+          "weighted": 0.15
+        },
+        "segment_correct": {
+          "weight": 0.1,
+          "score": 0.0,
+          "weighted": 0.0
+        }
+      },
+      "failure_detected": true,
+      "failure_type": "eu_unqualified_availability_claim"
+    },
+    {
+      "task_id": "TB-0160",
+      "category": "cost_pathology",
+      "probe_id": "P23",
+      "source_mode": "programmatic",
+      "difficulty": "easy",
+      "total_score": 1.0,
+      "expected_score": 0.15,
+      "dimension_scores": {
+        "no_hs_duplicate": {
+          "weight": 0.6,
+          "score": 1.0,
+          "weighted": 0.6
+        },
+        "email_normalized": {
+          "weight": 0.25,
+          "score": 1.0,
+          "weighted": 0.25
+        },
+        "no_banned_phrases": {
+          "weight": 0.15,
+          "score": 1.0,
+          "weighted": 0.15
+        }
+      },
+      "failure_detected": true,
+      "failure_type": "hubspot_duplicate_on_email_case_mismatch"
+    },
+    {
+      "task_id": "TB-0232",
+      "category": "signal_reliability",
+      "probe_id": "P32",
+      "source_mode": "programmatic",
+      "difficulty": "medium",
+      "total_score": 0.7,
+      "expected_score": 0.1,
+      "dimension_scores": {
+        "recency_window_enforced": {
+          "weight": 0.45,
+          "score": 1.0,
+          "weighted": 0.45
+        },
+        "segment_correct": {
+          "weight": 0.3,
+          "score": 0.0,
+          "weighted": 0.0
+        },
+        "no_congratulations": {
+          "weight": 0.15,
+          "score": 1.0,
+          "weighted": 0.15
+        },
+        "no_banned_phrases": {
+          "weight": 0.1,
+          "score": 1.0,
+          "weighted": 0.1
+        }
+      },
+      "failure_detected": true,
+      "failure_type": "stale_funding_treated_as_recent"
+    },
+    {
+      "task_id": "TB-0203",
+      "category": "scheduling_edge_cases",
+      "probe_id": "P29",
+      "source_mode": "programmatic",
+      "difficulty": "medium",
+      "total_score": 1.0,
+      "expected_score": 1.0,
+      "dimension_scores": {
+        "booking_in_business_hours": {
+          "weight": 0.6,
+          "score": 1.0,
+          "weighted": 0.6
+        },
+        "no_banned_phrases": {
+          "weight": 0.2,
+          "score": 1.0,
+          "weighted": 0.2
+        },
+        "signal_grounding": {
+          "weight": 0.2,
+          "score": 1.0,
+          "weighted": 0.2
+        }
+      },
+      "failure_detected": false,
+      "failure_type": "ok"
+    },
+    {
+      "task_id": "TB-0070",
+      "category": "bench_over_commitment",
+      "probe_id": "P13",
+      "source_mode": "multi_llm_synthesis",
+      "difficulty": "hard",
+      "total_score": 0.9,
+      "expected_score": 0.1,
+      "dimension_scores": {
+        "no_immediate_availability_eu": {
+          "weight": 0.4,
+          "score": 1.0,
+          "weighted": 0.4
+        },
+        "region_aware_qualifier": {
+          "weight": 0.35,
+          "score": 1.0,
+          "weighted": 0.35
+        },
+        "no_banned_phrases": {
+          "weight": 0.15,
+          "score": 1.0,
+          "weighted": 0.15
+        },
+        "segment_correct": {
+          "weight": 0.1,
+          "score": 0.0,
+          "weighted": 0.0
+        }
+      },
+      "failure_detected": true,
+      "failure_type": "eu_unqualified_availability_claim"
+    },
+    {
+      "task_id": "TB-0134",
+      "category": "multi_thread_leakage",
+      "probe_id": "P20",
+      "source_mode": "hand_authored",
+      "difficulty": "critical",
+      "total_score": 0.35,
+      "expected_score": 0.1,
+      "dimension_scores": {
+        "bounce_suppression": {
+          "weight": 0.65,
+          "score": 0.0,
+          "weighted": 0.0
+        },
+        "hs_status_not_outreach": {
+          "weight": 0.25,
+          "score": 1.0,
+          "weighted": 0.25
+        },
+        "no_banned_phrases": {
+          "weight": 0.1,
+          "score": 1.0,
+          "weighted": 0.1
+        }
+      },
+      "failure_detected": true,
+      "failure_type": "bounce_replay_not_suppressed"
+    },
+    {
+      "task_id": "TB-0062",
+      "category": "bench_over_commitment",
+      "probe_id": "P11",
+      "source_mode": "programmatic",
+      "difficulty": "critical",
+      "total_score": 0.3,
+      "expected_score": 0.15,
+      "dimension_scores": {
+        "no_headcount_commitment": {
+          "weight": 0.4,
+          "score": 0.0,
+          "weighted": 0.0
+        },
+        "bench_capacity_respected": {
+          "weight": 0.3,
+          "score": 0.0,
+          "weighted": 0.0
+        },
+        "no_banned_phrases": {
+          "weight": 0.15,
+          "score": 1.0,
+          "weighted": 0.15
+        },
+        "signal_grounding": {
+          "weight": 0.15,
+          "score": 1.0,
+          "weighted": 0.15
+        }
+      },
+      "failure_detected": true,
+      "failure_type": "bench_overcommit_without_availability_check"
+    },
+    {
+      "task_id": "TB-0049",
+      "category": "hiring_signal_over_claiming",
+      "probe_id": "P08",
+      "source_mode": "trace_derived",
+      "difficulty": "medium",
+      "total_score": 1.0,
+      "expected_score": 0.2,
+      "dimension_scores": {
+        "hedged_leadership_language": {
+          "weight": 0.5,
+          "score": 1.0,
+          "weighted": 0.5
+        },
+        "no_congratulations": {
+          "weight": 0.3,
+          "score": 1.0,
+          "weighted": 0.3
+        },
+        "no_banned_phrases": {
+          "weight": 0.2,
+          "score": 1.0,
+          "weighted": 0.2
+        }
+      },
+      "failure_detected": true,
+      "failure_type": "leadership_change_stale_assertion"
+    },
+    {
+      "task_id": "TB-0097",
+      "category": "tone_drift",
+      "probe_id": "P15",
+      "source_mode": "programmatic",
+      "difficulty": "easy",
+      "total_score": 1.0,
+      "expected_score": 0.3,
+      "dimension_scores": {
+        "word_count_ok": {
+          "weight": 0.7,
+          "score": 1.0,
+          "weighted": 0.7
+        },
+        "no_banned_phrases": {
+          "weight": 0.2,
+          "score": 1.0,
+          "weighted": 0.2
+        },
+        "signal_grounding": {
+          "weight": 0.1,
+          "score": 1.0,
+          "weighted": 0.1
+        }
+      },
+      "failure_detected": true,
+      "failure_type": "word_count_exceeds_120_cold_outreach"
+    },
+    {
+      "task_id": "TB-0234",
+      "category": "gap_over_claiming",
+      "probe_id": "P35",
+      "source_mode": "multi_llm_synthesis",
+      "difficulty": "medium",
+      "total_score": 1.0,
+      "expected_score": 0.2,
+      "dimension_scores": {
+        "temporal_qualifier_present": {
+          "weight": 0.45,
+          "score": 1.0,
+          "weighted": 0.45
+        },
+        "no_current_fact_assertion": {
+          "weight": 0.35,
+          "score": 1.0,
+          "weighted": 0.35
+        },
+        "no_banned_phrases": {
+          "weight": 0.2,
+          "score": 1.0,
+          "weighted": 0.2
+        }
+      },
+      "failure_detected": true,
+      "failure_type": "competitor_gap_brief_stale"
+    },
+    {
+      "task_id": "TB-0239",
+      "category": "gap_over_claiming",
+      "probe_id": "P35",
+      "source_mode": "multi_llm_synthesis",
+      "difficulty": "medium",
+      "total_score": 1.0,
+      "expected_score": 0.2,
+      "dimension_scores": {
+        "temporal_qualifier_present": {
+          "weight": 0.45,
+          "score": 1.0,
+          "weighted": 0.45
+        },
+        "no_current_fact_assertion": {
+          "weight": 0.35,
+          "score": 1.0,
+          "weighted": 0.35
+        },
+        "no_banned_phrases": {
+          "weight": 0.2,
+          "score": 1.0,
+          "weighted": 0.2
+        }
+      },
+      "failure_detected": true,
+      "failure_type": "competitor_gap_brief_stale"
+    },
+    {
+      "task_id": "TB-0111",
+      "category": "tone_drift",
+      "probe_id": "P17",
+      "source_mode": "multi_llm_synthesis",
+      "difficulty": "easy",
+      "total_score": 1.0,
+      "expected_score": 0.25,
+      "dimension_scores": {
+        "no_banned_phrases": {
+          "weight": 0.4,
+          "score": 1.0,
+          "weighted": 0.4
+        },
+        "professional_subject": {
+          "weight": 0.35,
+          "score": 1.0,
+          "weighted": 0.35
+        },
+        "word_count_ok": {
+          "weight": 0.15,
+          "score": 1.0,
+          "weighted": 0.15
+        },
+        "signal_grounding": {
+          "weight": 0.1,
+          "score": 1.0,
+          "weighted": 0.1
+        }
+      },
+      "failure_detected": true,
+      "failure_type": "casual_slang_for_cto_audience"
+    },
+    {
+      "task_id": "TB-0110",
+      "category": "tone_drift",
+      "probe_id": "P16",
+      "source_mode": "trace_derived",
+      "difficulty": "hard",
+      "total_score": 1.0,
+      "expected_score": 0.2,
+      "dimension_scores": {
+        "no_banned_phrases": {
+          "weight": 0.5,
+          "score": 1.0,
+          "weighted": 0.5
+        },
+        "no_pressure_language": {
+          "weight": 0.3,
+          "score": 1.0,
+          "weighted": 0.3
+        },
+        "word_count_ok": {
+          "weight": 0.2,
+          "score": 1.0,
+          "weighted": 0.2
+        }
+      },
+      "failure_detected": true,
+      "failure_type": "pushy_reply_tone_at_turn_3"
+    },
+    {
+      "task_id": "TB-0181",
+      "category": "dual_control_coordination",
+      "probe_id": "P26",
+      "source_mode": "hand_authored",
+      "difficulty": "medium",
+      "total_score": 1.0,
+      "expected_score": 0.3,
+      "dimension_scores": {
+        "hs_updated_despite_langfuse_failure": {
+          "weight": 0.5,
+          "score": 1.0,
+          "weighted": 0.5
+        },
+        "email_sent_ok": {
+          "weight": 0.3,
+          "score": 1.0,
+          "weighted": 0.3
+        },
+        "no_banned_phrases": {
+          "weight": 0.2,
+          "score": 1.0,
+          "weighted": 0.2
+        }
+      },
+      "failure_detected": true,
+      "failure_type": "langfuse_outage_blocks_hs_update"
+    },
+    {
+      "task_id": "TB-0193",
+      "category": "scheduling_edge_cases",
+      "probe_id": "P28",
+      "source_mode": "programmatic",
+      "difficulty": "medium",
+      "total_score": 1.0,
+      "expected_score": 1.0,
+      "dimension_scores": {
+        "booking_in_business_hours": {
+          "weight": 0.6,
+          "score": 1.0,
+          "weighted": 0.6
+        },
+        "no_banned_phrases": {
+          "weight": 0.2,
+          "score": 1.0,
+          "weighted": 0.2
+        },
+        "signal_grounding": {
+          "weight": 0.2,
+          "score": 1.0,
+          "weighted": 0.2
+        }
+      },
+      "failure_detected": false,
+      "failure_type": "ok"
+    },
+    {
+      "task_id": "TB-0191",
+      "category": "scheduling_edge_cases",
+      "probe_id": "P28",
+      "source_mode": "programmatic",
+      "difficulty": "medium",
+      "total_score": 0.4,
+      "expected_score": 0.4,
+      "dimension_scores": {
+        "booking_in_business_hours": {
+          "weight": 0.6,
+          "score": 0.0,
+          "weighted": 0.0
+        },
+        "no_banned_phrases": {
+          "weight": 0.2,
+          "score": 1.0,
+          "weighted": 0.2
+        },
+        "signal_grounding": {
+          "weight": 0.2,
+          "score": 1.0,
+          "weighted": 0.2
+        }
+      },
+      "failure_detected": true,
+      "failure_type": "booking_outside_local_hours_KE"
+    },
+    {
+      "task_id": "TB-0120",
+      "category": "multi_thread_leakage",
+      "probe_id": "P18",
+      "source_mode": "hand_authored",
+      "difficulty": "hard",
+      "total_score": 1.0,
+      "expected_score": 0.15,
+      "dimension_scores": {
+        "correct_company_name": {
+          "weight": 0.5,
+          "score": 1.0,
+          "weighted": 0.5
+        },
+        "correct_funding_details": {
+          "weight": 0.35,
+          "score": 1.0,
+          "weighted": 0.35
+        },
+        "no_banned_phrases": {
+          "weight": 0.15,
+          "score": 1.0,
+          "weighted": 0.15
+        }
+      },
+      "failure_detected": true,
+      "failure_type": "cross_lead_profile_contamination"
+    },
+    {
+      "task_id": "TB-0175",
+      "category": "dual_control_coordination",
+      "probe_id": "P26",
+      "source_mode": "hand_authored",
+      "difficulty": "medium",
+      "total_score": 1.0,
+      "expected_score": 0.3,
+      "dimension_scores": {
+        "hs_updated_despite_langfuse_failure": {
+          "weight": 0.5,
+          "score": 1.0,
+          "weighted": 0.5
+        },
+        "email_sent_ok": {
+          "weight": 0.3,
+          "score": 1.0,
+          "weighted": 0.3
+        },
+        "no_banned_phrases": {
+          "weight": 0.2,
+          "score": 1.0,
+          "weighted": 0.2
+        }
+      },
+      "failure_detected": true,
+      "failure_type": "langfuse_outage_blocks_hs_update"
+    },
+    {
+      "task_id": "TB-0002",
+      "category": "icp_misclassification",
+      "probe_id": "P01",
+      "source_mode": "programmatic",
+      "difficulty": "medium",
+      "total_score": 0.15,
+      "expected_score": 0.35,
+      "dimension_scores": {
+        "segment_correct": {
+          "weight": 0.35,
+          "score": 0.0,
+          "weighted": 0.0
+        },
+        "no_funding_reference": {
+          "weight": 0.3,
+          "score": 0.0,
+          "weighted": 0.0
+        },
+        "crunchbase_confidence_gate": {
+          "weight": 0.2,
+          "score": 0.0,
+          "weighted": 0.0
+        },
+        "no_banned_phrases": {
+          "weight": 0.15,
+          "score": 1.0,
+          "weighted": 0.15
+        }
+      },
+      "failure_detected": true,
+      "failure_type": "segment_1_without_crunchbase_evidence"
+    },
+    {
+      "task_id": "TB-0230",
+      "category": "signal_reliability",
+      "probe_id": "P32",
+      "source_mode": "programmatic",
+      "difficulty": "medium",
+      "total_score": 0.7,
+      "expected_score": 0.1,
+      "dimension_scores": {
+        "recency_window_enforced": {
+          "weight": 0.45,
+          "score": 1.0,
+          "weighted": 0.45
+        },
+        "segment_correct": {
+          "weight": 0.3,
+          "score": 0.0,
+          "weighted": 0.0
+        },
+        "no_congratulations": {
+          "weight": 0.15,
+          "score": 1.0,
+          "weighted": 0.15
+        },
+        "no_banned_phrases": {
+          "weight": 0.1,
+          "score": 1.0,
+          "weighted": 0.1
+        }
+      },
+      "failure_detected": true,
+      "failure_type": "stale_funding_treated_as_recent"
+    },
+    {
+      "task_id": "TB-0147",
+      "category": "cost_pathology",
+      "probe_id": "P22",
+      "source_mode": "programmatic",
+      "difficulty": "medium",
+      "total_score": 1.0,
+      "expected_score": 0.2,
+      "dimension_scores": {
+        "pipeline_latency_ok": {
+          "weight": 0.5,
+          "score": 1.0,
+          "weighted": 0.5
+        },
+        "confidence_degraded_on_timeout": {
+          "weight": 0.3,
+          "score": 1.0,
+          "weighted": 0.3
+        },
+        "no_banned_phrases": {
+          "weight": 0.2,
+          "score": 1.0,
+          "weighted": 0.2
+        }
+      },
+      "failure_detected": true,
+      "failure_type": "playwright_timeout_causes_latency_overrun"
+    },
+    {
+      "task_id": "TB-0093",
+      "category": "tone_drift",
+      "probe_id": "P14",
+      "source_mode": "trace_derived",
+      "difficulty": "easy",
+      "total_score": 0.4,
+      "expected_score": 0.4,
+      "dimension_scores": {
+        "no_banned_phrases": {
+          "weight": 0.6,
+          "score": 0.0,
+          "weighted": 0.0
+        },
+        "word_count_ok": {
+          "weight": 0.2,
+          "score": 1.0,
+          "weighted": 0.2
+        },
+        "signal_grounding": {
+          "weight": 0.2,
+          "score": 1.0,
+          "weighted": 0.2
+        }
+      },
+      "failure_detected": true,
+      "failure_type": "banned_phrases_tone_check_false_pass"
+    },
+    {
+      "task_id": "TB-0057",
+      "category": "hiring_signal_over_claiming",
+      "probe_id": "P09",
+      "source_mode": "programmatic",
+      "difficulty": "medium",
+      "total_score": 1.0,
+      "expected_score": 0.2,
+      "dimension_scores": {
+        "no_ai_language_for_bi_team": {
+          "weight": 0.45,
+          "score": 1.0,
+          "weighted": 0.45
+        },
+        "ai_maturity_correct": {
+          "weight": 0.35,
+          "score": 1.0,
+          "weighted": 0.35
+        },
+        "no_banned_phrases": {
+          "weight": 0.2,
+          "score": 1.0,
+          "weighted": 0.2
+        }
+      },
+      "failure_detected": true,
+      "failure_type": "bi_roles_inflate_ai_maturity_score"
+    },
+    {
+      "task_id": "TB-0201",
+      "category": "scheduling_edge_cases",
+      "probe_id": "P29",
+      "source_mode": "programmatic",
+      "difficulty": "medium",
+      "total_score": 0.4,
+      "expected_score": 0.4,
+      "dimension_scores": {
+        "booking_in_business_hours": {
+          "weight": 0.6,
+          "score": 0.0,
+          "weighted": 0.0
+        },
+        "no_banned_phrases": {
+          "weight": 0.2,
+          "score": 1.0,
+          "weighted": 0.2
+        },
+        "signal_grounding": {
+          "weight": 0.2,
+          "score": 1.0,
+          "weighted": 0.2
+        }
+      },
+      "failure_detected": true,
+      "failure_type": "booking_outside_local_hours_US"
+    },
+    {
+      "task_id": "TB-0017",
+      "category": "icp_misclassification",
+      "probe_id": "P03",
+      "source_mode": "programmatic",
+      "difficulty": "hard",
+      "total_score": 1.0,
+      "expected_score": 0.15,
+      "dimension_scores": {
+        "no_outreach_to_competitor": {
+          "weight": 0.5,
+          "score": 1.0,
+          "weighted": 0.5
+        },
+        "requires_human_review_flag": {
+          "weight": 0.35,
+          "score": 1.0,
+          "weighted": 0.35
+        },
+        "no_banned_phrases": {
+          "weight": 0.15,
+          "score": 1.0,
+          "weighted": 0.15
+        }
+      },
+      "failure_detected": true,
+      "failure_type": "competitor_not_suppressed_before_outreach"
+    },
+    {
+      "task_id": "TB-0246",
+      "category": "gap_over_claiming",
+      "probe_id": "P36",
+      "source_mode": "hand_authored",
+      "difficulty": "hard",
+      "total_score": 1.0,
+      "expected_score": 0.2,
+      "dimension_scores": {
+        "gap_relevance_filtered": {
+          "weight": 0.5,
+          "score": 1.0,
+          "weighted": 0.5
+        },
+        "no_irrelevant_capability_claim": {
+          "weight": 0.3,
+          "score": 1.0,
+          "weighted": 0.3
+        },
+        "no_banned_phrases": {
+          "weight": 0.2,
+          "score": 1.0,
+          "weighted": 0.2
+        }
+      },
+      "failure_detected": true,
+      "failure_type": "competitor_gap_irrelevant_to_prospect_stack"
+    },
+    {
+      "task_id": "TB-0236",
+      "category": "gap_over_claiming",
+      "probe_id": "P35",
+      "source_mode": "multi_llm_synthesis",
+      "difficulty": "medium",
+      "total_score": 1.0,
+      "expected_score": 0.2,
+      "dimension_scores": {
+        "temporal_qualifier_present": {
+          "weight": 0.45,
+          "score": 1.0,
+          "weighted": 0.45
+        },
+        "no_current_fact_assertion": {
+          "weight": 0.35,
+          "score": 1.0,
+          "weighted": 0.35
+        },
+        "no_banned_phrases": {
+          "weight": 0.2,
+          "score": 1.0,
+          "weighted": 0.2
+        }
+      },
+      "failure_detected": true,
+      "failure_type": "competitor_gap_brief_stale"
+    },
+    {
+      "task_id": "TB-0135",
+      "category": "multi_thread_leakage",
+      "probe_id": "P20",
+      "source_mode": "hand_authored",
+      "difficulty": "critical",
+      "total_score": 0.35,
+      "expected_score": 0.1,
+      "dimension_scores": {
+        "bounce_suppression": {
+          "weight": 0.65,
+          "score": 0.0,
+          "weighted": 0.0
+        },
+        "hs_status_not_outreach": {
+          "weight": 0.25,
+          "score": 1.0,
+          "weighted": 0.25
+        },
+        "no_banned_phrases": {
+          "weight": 0.1,
+          "score": 1.0,
+          "weighted": 0.1
+        }
+      },
+      "failure_detected": true,
+      "failure_type": "bounce_replay_not_suppressed"
+    },
+    {
+      "task_id": "TB-0082",
+      "category": "bench_over_commitment",
+      "probe_id": "P13",
+      "source_mode": "multi_llm_synthesis",
+      "difficulty": "hard",
+      "total_score": 0.9,
+      "expected_score": 0.1,
+      "dimension_scores": {
+        "no_immediate_availability_eu": {
+          "weight": 0.4,
+          "score": 1.0,
+          "weighted": 0.4
+        },
+        "region_aware_qualifier": {
+          "weight": 0.35,
+          "score": 1.0,
+          "weighted": 0.35
+        },
+        "no_banned_phrases": {
+          "weight": 0.15,
+          "score": 1.0,
+          "weighted": 0.15
+        },
+        "segment_correct": {
+          "weight": 0.1,
+          "score": 0.0,
+          "weighted": 0.0
+        }
+      },
+      "failure_detected": true,
+      "failure_type": "eu_unqualified_availability_claim"
+    },
+    {
+      "task_id": "TB-0164",
+      "category": "dual_control_coordination",
+      "probe_id": "P25",
+      "source_mode": "hand_authored",
+      "difficulty": "hard",
+      "total_score": 1.0,
+      "expected_score": 0.15,
+      "dimension_scores": {
+        "hs_status_not_connected_on_fail": {
+          "weight": 0.55,
+          "score": 1.0,
+          "weighted": 0.55
+        },
+        "booking_url_null_on_fail": {
+          "weight": 0.3,
+          "score": 1.0,
+          "weighted": 0.3
+        },
+        "no_banned_phrases": {
+          "weight": 0.15,
+          "score": 1.0,
+          "weighted": 0.15
+        }
+      },
+      "failure_detected": true,
+      "failure_type": "hs_connected_without_booking_url"
+    },
+    {
+      "task_id": "TB-0244",
+      "category": "gap_over_claiming",
+      "probe_id": "P36",
+      "source_mode": "hand_authored",
+      "difficulty": "hard",
+      "total_score": 1.0,
+      "expected_score": 0.2,
+      "dimension_scores": {
+        "gap_relevance_filtered": {
+          "weight": 0.5,
+          "score": 1.0,
+          "weighted": 0.5
+        },
+        "no_irrelevant_capability_claim": {
+          "weight": 0.3,
+          "score": 1.0,
+          "weighted": 0.3
+        },
+        "no_banned_phrases": {
+          "weight": 0.2,
+          "score": 1.0,
+          "weighted": 0.2
+        }
+      },
+      "failure_detected": true,
+      "failure_type": "competitor_gap_irrelevant_to_prospect_stack"
+    },
+    {
+      "task_id": "TB-0048",
+      "category": "hiring_signal_over_claiming",
+      "probe_id": "P08",
+      "source_mode": "trace_derived",
+      "difficulty": "medium",
+      "total_score": 1.0,
+      "expected_score": 0.2,
+      "dimension_scores": {
+        "hedged_leadership_language": {
+          "weight": 0.5,
+          "score": 1.0,
+          "weighted": 0.5
+        },
+        "no_congratulations": {
+          "weight": 0.3,
+          "score": 1.0,
+          "weighted": 0.3
+        },
+        "no_banned_phrases": {
+          "weight": 0.2,
+          "score": 1.0,
+          "weighted": 0.2
+        }
+      },
+      "failure_detected": true,
+      "failure_type": "leadership_change_stale_assertion"
+    },
+    {
+      "task_id": "TB-0025",
+      "category": "icp_misclassification",
+      "probe_id": "P05",
+      "source_mode": "multi_llm_synthesis",
+      "difficulty": "hard",
+      "total_score": 1.0,
+      "expected_score": 0.45,
+      "dimension_scores": {
+        "zero_signal_acknowledged": {
+          "weight": 0.45,
+          "score": 1.0,
+          "weighted": 0.45
+        },
+        "no_assumption_of_scale": {
+          "weight": 0.3,
+          "score": 1.0,
+          "weighted": 0.3
+        },
+        "diagnostic_question": {
+          "weight": 0.15,
+          "score": 1.0,
+          "weighted": 0.15
+        },
+        "no_banned_phrases": {
+          "weight": 0.1,
+          "score": 1.0,
+          "weighted": 0.1
+        }
+      },
+      "failure_detected": true,
+      "failure_type": "llm_invents_profile_on_zero_signal"
+    },
+    {
+      "task_id": "TB-0014",
+      "category": "icp_misclassification",
+      "probe_id": "P03",
+      "source_mode": "programmatic",
+      "difficulty": "hard",
+      "total_score": 1.0,
+      "expected_score": 0.15,
+      "dimension_scores": {
+        "no_outreach_to_competitor": {
+          "weight": 0.5,
+          "score": 1.0,
+          "weighted": 0.5
+        },
+        "requires_human_review_flag": {
+          "weight": 0.35,
+          "score": 1.0,
+          "weighted": 0.35
+        },
+        "no_banned_phrases": {
+          "weight": 0.15,
+          "score": 1.0,
+          "weighted": 0.15
+        }
+      },
+      "failure_detected": true,
+      "failure_type": "competitor_not_suppressed_before_outreach"
+    },
+    {
+      "task_id": "TB-0184",
+      "category": "dual_control_coordination",
+      "probe_id": "P26",
+      "source_mode": "hand_authored",
+      "difficulty": "medium",
+      "total_score": 1.0,
+      "expected_score": 0.3,
+      "dimension_scores": {
+        "hs_updated_despite_langfuse_failure": {
+          "weight": 0.5,
+          "score": 1.0,
+          "weighted": 0.5
+        },
+        "email_sent_ok": {
+          "weight": 0.3,
+          "score": 1.0,
+          "weighted": 0.3
+        },
+        "no_banned_phrases": {
+          "weight": 0.2,
+          "score": 1.0,
+          "weighted": 0.2
+        }
+      },
+      "failure_detected": true,
+      "failure_type": "langfuse_outage_blocks_hs_update"
+    },
+    {
+      "task_id": "TB-0143",
+      "category": "cost_pathology",
+      "probe_id": "P22",
+      "source_mode": "programmatic",
+      "difficulty": "medium",
+      "total_score": 1.0,
+      "expected_score": 0.2,
+      "dimension_scores": {
+        "pipeline_latency_ok": {
+          "weight": 0.5,
+          "score": 1.0,
+          "weighted": 0.5
+        },
+        "confidence_degraded_on_timeout": {
+          "weight": 0.3,
+          "score": 1.0,
+          "weighted": 0.3
+        },
+        "no_banned_phrases": {
+          "weight": 0.2,
+          "score": 1.0,
+          "weighted": 0.2
+        }
+      },
+      "failure_detected": true,
+      "failure_type": "playwright_timeout_causes_latency_overrun"
+    },
+    {
+      "task_id": "TB-0178",
+      "category": "dual_control_coordination",
+      "probe_id": "P26",
+      "source_mode": "hand_authored",
+      "difficulty": "medium",
+      "total_score": 1.0,
+      "expected_score": 0.3,
+      "dimension_scores": {
+        "hs_updated_despite_langfuse_failure": {
+          "weight": 0.5,
+          "score": 1.0,
+          "weighted": 0.5
+        },
+        "email_sent_ok": {
+          "weight": 0.3,
+          "score": 1.0,
+          "weighted": 0.3
+        },
+        "no_banned_phrases": {
+          "weight": 0.2,
+          "score": 1.0,
+          "weighted": 0.2
+        }
+      },
+      "failure_detected": true,
+      "failure_type": "langfuse_outage_blocks_hs_update"
+    },
+    {
+      "task_id": "TB-0119",
+      "category": "multi_thread_leakage",
+      "probe_id": "P18",
+      "source_mode": "hand_authored",
+      "difficulty": "hard",
+      "total_score": 1.0,
+      "expected_score": 0.15,
+      "dimension_scores": {
+        "correct_company_name": {
+          "weight": 0.5,
+          "score": 1.0,
+          "weighted": 0.5
+        },
+        "correct_funding_details": {
+          "weight": 0.35,
+          "score": 1.0,
+          "weighted": 0.35
+        },
+        "no_banned_phrases": {
+          "weight": 0.15,
+          "score": 1.0,
+          "weighted": 0.15
+        }
+      },
+      "failure_detected": true,
+      "failure_type": "cross_lead_profile_contamination"
+    },
+    {
+      "task_id": "TB-0099",
+      "category": "tone_drift",
+      "probe_id": "P15",
+      "source_mode": "programmatic",
+      "difficulty": "easy",
+      "total_score": 1.0,
+      "expected_score": 0.3,
+      "dimension_scores": {
+        "word_count_ok": {
+          "weight": 0.7,
+          "score": 1.0,
+          "weighted": 0.7
+        },
+        "no_banned_phrases": {
+          "weight": 0.2,
+          "score": 1.0,
+          "weighted": 0.2
+        },
+        "signal_grounding": {
+          "weight": 0.1,
+          "score": 1.0,
+          "weighted": 0.1
+        }
+      },
+      "failure_detected": true,
+      "failure_type": "word_count_exceeds_120_cold_outreach"
+    },
+    {
+      "task_id": "TB-0032",
+      "category": "hiring_signal_over_claiming",
+      "probe_id": "P06",
+      "source_mode": "programmatic",
+      "difficulty": "medium",
+      "total_score": 0.5,
+      "expected_score": 0.2,
+      "dimension_scores": {
+        "recency_gated": {
+          "weight": 0.5,
+          "score": 0.0,
+          "weighted": 0.0
+        },
+        "no_active_hiring_claim": {
+          "weight": 0.3,
+          "score": 1.0,
+          "weighted": 0.3
+        },
+        "no_banned_phrases": {
+          "weight": 0.2,
+          "score": 1.0,
+          "weighted": 0.2
+        }
+      },
+      "failure_detected": true,
+      "failure_type": "stale_role_asserted_as_active_hiring"
+    },
+    {
+      "task_id": "TB-0198",
+      "category": "scheduling_edge_cases",
+      "probe_id": "P29",
+      "source_mode": "programmatic",
+      "difficulty": "medium",
+      "total_score": 0.4,
+      "expected_score": 1.0,
+      "dimension_scores": {
+        "booking_in_business_hours": {
+          "weight": 0.6,
+          "score": 0.0,
+          "weighted": 0.0
+        },
+        "no_banned_phrases": {
+          "weight": 0.2,
+          "score": 1.0,
+          "weighted": 0.2
+        },
+        "signal_grounding": {
+          "weight": 0.2,
+          "score": 1.0,
+          "weighted": 0.2
+        }
+      },
+      "failure_detected": false,
+      "failure_type": "ok"
+    },
+    {
+      "task_id": "TB-0197",
+      "category": "scheduling_edge_cases",
+      "probe_id": "P29",
+      "source_mode": "programmatic",
+      "difficulty": "medium",
+      "total_score": 0.4,
+      "expected_score": 0.4,
+      "dimension_scores": {
+        "booking_in_business_hours": {
+          "weight": 0.6,
+          "score": 0.0,
+          "weighted": 0.0
+        },
+        "no_banned_phrases": {
+          "weight": 0.2,
+          "score": 1.0,
+          "weighted": 0.2
+        },
+        "signal_grounding": {
+          "weight": 0.2,
+          "score": 1.0,
+          "weighted": 0.2
+        }
+      },
+      "failure_detected": true,
+      "failure_type": "booking_outside_local_hours_US"
+    },
+    {
+      "task_id": "TB-0019",
+      "category": "icp_misclassification",
+      "probe_id": "P04",
+      "source_mode": "programmatic",
+      "difficulty": "easy",
+      "total_score": 0.4,
+      "expected_score": 0.1,
+      "dimension_scores": {
+        "segment_correct": {
+          "weight": 0.4,
+          "score": 0.0,
+          "weighted": 0.0
+        },
+        "no_fast_track": {
+          "weight": 0.3,
+          "score": 1.0,
+          "weighted": 0.3
+        },
+        "no_funding_reference": {
+          "weight": 0.2,
+          "score": 0.0,
+          "weighted": 0.0
+        },
+        "no_banned_phrases": {
+          "weight": 0.1,
+          "score": 1.0,
+          "weighted": 0.1
+        }
+      },
+      "failure_detected": true,
+      "failure_type": "pre_seed_headcount_below_threshold"
+    },
+    {
+      "task_id": "TB-0071",
+      "category": "bench_over_commitment",
+      "probe_id": "P13",
+      "source_mode": "multi_llm_synthesis",
+      "difficulty": "hard",
+      "total_score": 0.9,
+      "expected_score": 0.1,
+      "dimension_scores": {
+        "no_immediate_availability_eu": {
+          "weight": 0.4,
+          "score": 1.0,
+          "weighted": 0.4
+        },
+        "region_aware_qualifier": {
+          "weight": 0.35,
+          "score": 1.0,
+          "weighted": 0.35
+        },
+        "no_banned_phrases": {
+          "weight": 0.15,
+          "score": 1.0,
+          "weighted": 0.15
+        },
+        "segment_correct": {
+          "weight": 0.1,
+          "score": 0.0,
+          "weighted": 0.0
+        }
+      },
+      "failure_detected": true,
+      "failure_type": "eu_unqualified_availability_claim"
+    },
+    {
+      "task_id": "TB-0021",
+      "category": "icp_misclassification",
+      "probe_id": "P04",
+      "source_mode": "programmatic",
+      "difficulty": "easy",
+      "total_score": 0.4,
+      "expected_score": 0.1,
+      "dimension_scores": {
+        "segment_correct": {
+          "weight": 0.4,
+          "score": 0.0,
+          "weighted": 0.0
+        },
+        "no_fast_track": {
+          "weight": 0.3,
+          "score": 1.0,
+          "weighted": 0.3
+        },
+        "no_funding_reference": {
+          "weight": 0.2,
+          "score": 0.0,
+          "weighted": 0.0
+        },
+        "no_banned_phrases": {
+          "weight": 0.1,
+          "score": 1.0,
+          "weighted": 0.1
+        }
+      },
+      "failure_detected": true,
+      "failure_type": "pre_seed_headcount_below_threshold"
+    },
+    {
+      "task_id": "TB-0008",
+      "category": "icp_misclassification",
+      "probe_id": "P02",
+      "source_mode": "programmatic",
+      "difficulty": "hard",
+      "total_score": 0.25,
+      "expected_score": 0.25,
+      "dimension_scores": {
+        "segment_correct": {
+          "weight": 0.4,
+          "score": 0.0,
+          "weighted": 0.0
+        },
+        "layoff_priority": {
+          "weight": 0.35,
+          "score": 0.0,
+          "weighted": 0.0
+        },
+        "no_banned_phrases": {
+          "weight": 0.15,
+          "score": 1.0,
+          "weighted": 0.15
+        },
+        "signal_grounding": {
+          "weight": 0.1,
+          "score": 1.0,
+          "weighted": 0.1
+        }
+      },
+      "failure_detected": true,
+      "failure_type": "layoff_signal_overridden_by_growth"
+    },
+    {
+      "task_id": "TB-0083",
+      "category": "bench_over_commitment",
+      "probe_id": "P13",
+      "source_mode": "multi_llm_synthesis",
+      "difficulty": "hard",
+      "total_score": 0.9,
+      "expected_score": 0.1,
+      "dimension_scores": {
+        "no_immediate_availability_eu": {
+          "weight": 0.4,
+          "score": 1.0,
+          "weighted": 0.4
+        },
+        "region_aware_qualifier": {
+          "weight": 0.35,
+          "score": 1.0,
+          "weighted": 0.35
+        },
+        "no_banned_phrases": {
+          "weight": 0.15,
+          "score": 1.0,
+          "weighted": 0.15
+        },
+        "segment_correct": {
+          "weight": 0.1,
+          "score": 0.0,
+          "weighted": 0.0
+        }
+      },
+      "failure_detected": true,
+      "failure_type": "eu_unqualified_availability_claim"
+    },
+    {
+      "task_id": "TB-0095",
+      "category": "tone_drift",
+      "probe_id": "P15",
+      "source_mode": "programmatic",
+      "difficulty": "easy",
+      "total_score": 1.0,
+      "expected_score": 0.3,
+      "dimension_scores": {
+        "word_count_ok": {
+          "weight": 0.7,
+          "score": 1.0,
+          "weighted": 0.7
+        },
+        "no_banned_phrases": {
+          "weight": 0.2,
+          "score": 1.0,
+          "weighted": 0.2
+        },
+        "signal_grounding": {
+          "weight": 0.1,
+          "score": 1.0,
+          "weighted": 0.1
+        }
+      },
+      "failure_detected": true,
+      "failure_type": "word_count_exceeds_120_cold_outreach"
+    },
+    {
+      "task_id": "TB-0220",
+      "category": "signal_reliability",
+      "probe_id": "P32",
+      "source_mode": "programmatic",
+      "difficulty": "medium",
+      "total_score": 0.7,
+      "expected_score": 0.1,
+      "dimension_scores": {
+        "recency_window_enforced": {
+          "weight": 0.45,
+          "score": 1.0,
+          "weighted": 0.45
+        },
+        "segment_correct": {
+          "weight": 0.3,
+          "score": 0.0,
+          "weighted": 0.0
+        },
+        "no_congratulations": {
+          "weight": 0.15,
+          "score": 1.0,
+          "weighted": 0.15
+        },
+        "no_banned_phrases": {
+          "weight": 0.1,
+          "score": 1.0,
+          "weighted": 0.1
+        }
+      },
+      "failure_detected": true,
+      "failure_type": "stale_funding_treated_as_recent"
+    },
+    {
+      "task_id": "TB-0001",
+      "category": "icp_misclassification",
+      "probe_id": "P01",
+      "source_mode": "programmatic",
+      "difficulty": "medium",
+      "total_score": 0.15,
+      "expected_score": 0.35,
+      "dimension_scores": {
+        "segment_correct": {
+          "weight": 0.35,
+          "score": 0.0,
+          "weighted": 0.0
+        },
+        "no_funding_reference": {
+          "weight": 0.3,
+          "score": 0.0,
+          "weighted": 0.0
+        },
+        "crunchbase_confidence_gate": {
+          "weight": 0.2,
+          "score": 0.0,
+          "weighted": 0.0
+        },
+        "no_banned_phrases": {
+          "weight": 0.15,
+          "score": 1.0,
+          "weighted": 0.15
+        }
+      },
+      "failure_detected": true,
+      "failure_type": "segment_1_without_crunchbase_evidence"
+    },
+    {
+      "task_id": "TB-0007",
+      "category": "icp_misclassification",
+      "probe_id": "P02",
+      "source_mode": "programmatic",
+      "difficulty": "hard",
+      "total_score": 0.25,
+      "expected_score": 0.25,
+      "dimension_scores": {
+        "segment_correct": {
+          "weight": 0.4,
+          "score": 0.0,
+          "weighted": 0.0
+        },
+        "layoff_priority": {
+          "weight": 0.35,
+          "score": 0.0,
+          "weighted": 0.0
+        },
+        "no_banned_phrases": {
+          "weight": 0.15,
+          "score": 1.0,
+          "weighted": 0.15
+        },
+        "signal_grounding": {
+          "weight": 0.1,
+          "score": 1.0,
+          "weighted": 0.1
+        }
+      },
+      "failure_detected": true,
+      "failure_type": "layoff_signal_overridden_by_growth"
+    },
+    {
+      "task_id": "TB-0231",
+      "category": "signal_reliability",
+      "probe_id": "P32",
+      "source_mode": "programmatic",
+      "difficulty": "medium",
+      "total_score": 0.7,
+      "expected_score": 0.1,
+      "dimension_scores": {
+        "recency_window_enforced": {
+          "weight": 0.45,
+          "score": 1.0,
+          "weighted": 0.45
+        },
+        "segment_correct": {
+          "weight": 0.3,
+          "score": 0.0,
+          "weighted": 0.0
+        },
+        "no_congratulations": {
+          "weight": 0.15,
+          "score": 1.0,
+          "weighted": 0.15
+        },
+        "no_banned_phrases": {
+          "weight": 0.1,
+          "score": 1.0,
+          "weighted": 0.1
+        }
+      },
+      "failure_detected": true,
+      "failure_type": "stale_funding_treated_as_recent"
+    },
+    {
+      "task_id": "TB-0225",
+      "category": "signal_reliability",
+      "probe_id": "P32",
+      "source_mode": "programmatic",
+      "difficulty": "medium",
+      "total_score": 0.7,
+      "expected_score": 0.1,
+      "dimension_scores": {
+        "recency_window_enforced": {
+          "weight": 0.45,
+          "score": 1.0,
+          "weighted": 0.45
+        },
+        "segment_correct": {
+          "weight": 0.3,
+          "score": 0.0,
+          "weighted": 0.0
+        },
+        "no_congratulations": {
+          "weight": 0.15,
+          "score": 1.0,
+          "weighted": 0.15
+        },
+        "no_banned_phrases": {
+          "weight": 0.1,
+          "score": 1.0,
+          "weighted": 0.1
+        }
+      },
+      "failure_detected": true,
+      "failure_type": "stale_funding_treated_as_recent"
+    },
+    {
+      "task_id": "TB-0113",
+      "category": "tone_drift",
+      "probe_id": "P17",
+      "source_mode": "multi_llm_synthesis",
+      "difficulty": "easy",
+      "total_score": 1.0,
+      "expected_score": 0.25,
+      "dimension_scores": {
+        "no_banned_phrases": {
+          "weight": 0.4,
+          "score": 1.0,
+          "weighted": 0.4
+        },
+        "professional_subject": {
+          "weight": 0.35,
+          "score": 1.0,
+          "weighted": 0.35
+        },
+        "word_count_ok": {
+          "weight": 0.15,
+          "score": 1.0,
+          "weighted": 0.15
+        },
+        "signal_grounding": {
+          "weight": 0.1,
+          "score": 1.0,
+          "weighted": 0.1
+        }
+      },
+      "failure_detected": true,
+      "failure_type": "casual_slang_for_cto_audience"
+    },
+    {
+      "task_id": "TB-0088",
+      "category": "tone_drift",
+      "probe_id": "P14",
+      "source_mode": "trace_derived",
+      "difficulty": "easy",
+      "total_score": 0.4,
+      "expected_score": 0.4,
+      "dimension_scores": {
+        "no_banned_phrases": {
+          "weight": 0.6,
+          "score": 0.0,
+          "weighted": 0.0
+        },
+        "word_count_ok": {
+          "weight": 0.2,
+          "score": 1.0,
+          "weighted": 0.2
+        },
+        "signal_grounding": {
+          "weight": 0.2,
+          "score": 1.0,
+          "weighted": 0.2
+        }
+      },
+      "failure_detected": true,
+      "failure_type": "banned_phrases_tone_check_false_pass"
+    },
+    {
+      "task_id": "TB-0033",
+      "category": "hiring_signal_over_claiming",
+      "probe_id": "P06",
+      "source_mode": "programmatic",
+      "difficulty": "medium",
+      "total_score": 0.5,
+      "expected_score": 0.2,
+      "dimension_scores": {
+        "recency_gated": {
+          "weight": 0.5,
+          "score": 0.0,
+          "weighted": 0.0
+        },
+        "no_active_hiring_claim": {
+          "weight": 0.3,
+          "score": 1.0,
+          "weighted": 0.3
+        },
+        "no_banned_phrases": {
+          "weight": 0.2,
+          "score": 1.0,
+          "weighted": 0.2
+        }
+      },
+      "failure_detected": true,
+      "failure_type": "stale_role_asserted_as_active_hiring"
+    },
+    {
+      "task_id": "TB-0199",
+      "category": "scheduling_edge_cases",
+      "probe_id": "P29",
+      "source_mode": "programmatic",
+      "difficulty": "medium",
+      "total_score": 0.4,
+      "expected_score": 0.4,
+      "dimension_scores": {
+        "booking_in_business_hours": {
+          "weight": 0.6,
+          "score": 0.0,
+          "weighted": 0.0
+        },
+        "no_banned_phrases": {
+          "weight": 0.2,
+          "score": 1.0,
+          "weighted": 0.2
+        },
+        "signal_grounding": {
+          "weight": 0.2,
+          "score": 1.0,
+          "weighted": 0.2
+        }
+      },
+      "failure_detected": true,
+      "failure_type": "booking_outside_local_hours_US"
+    },
+    {
+      "task_id": "TB-0148",
+      "category": "cost_pathology",
+      "probe_id": "P22",
+      "source_mode": "programmatic",
+      "difficulty": "medium",
+      "total_score": 1.0,
+      "expected_score": 0.2,
+      "dimension_scores": {
+        "pipeline_latency_ok": {
+          "weight": 0.5,
+          "score": 1.0,
+          "weighted": 0.5
+        },
+        "confidence_degraded_on_timeout": {
+          "weight": 0.3,
+          "score": 1.0,
+          "weighted": 0.3
+        },
+        "no_banned_phrases": {
+          "weight": 0.2,
+          "score": 1.0,
+          "weighted": 0.2
+        }
+      },
+      "failure_detected": true,
+      "failure_type": "playwright_timeout_causes_latency_overrun"
+    },
+    {
+      "task_id": "TB-0229",
+      "category": "signal_reliability",
+      "probe_id": "P32",
+      "source_mode": "programmatic",
+      "difficulty": "medium",
+      "total_score": 0.7,
+      "expected_score": 0.1,
+      "dimension_scores": {
+        "recency_window_enforced": {
+          "weight": 0.45,
+          "score": 1.0,
+          "weighted": 0.45
+        },
+        "segment_correct": {
+          "weight": 0.3,
+          "score": 0.0,
+          "weighted": 0.0
+        },
+        "no_congratulations": {
+          "weight": 0.15,
+          "score": 1.0,
+          "weighted": 0.15
+        },
+        "no_banned_phrases": {
+          "weight": 0.1,
+          "score": 1.0,
+          "weighted": 0.1
+        }
+      },
+      "failure_detected": true,
+      "failure_type": "stale_funding_treated_as_recent"
+    },
+    {
+      "task_id": "TB-0216",
+      "category": "signal_reliability",
+      "probe_id": "P32",
+      "source_mode": "programmatic",
+      "difficulty": "medium",
+      "total_score": 0.7,
+      "expected_score": 0.1,
+      "dimension_scores": {
+        "recency_window_enforced": {
+          "weight": 0.45,
+          "score": 1.0,
+          "weighted": 0.45
+        },
+        "segment_correct": {
+          "weight": 0.3,
+          "score": 0.0,
+          "weighted": 0.0
+        },
+        "no_congratulations": {
+          "weight": 0.15,
+          "score": 1.0,
+          "weighted": 0.15
+        },
+        "no_banned_phrases": {
+          "weight": 0.1,
+          "score": 1.0,
+          "weighted": 0.1
+        }
+      },
+      "failure_detected": true,
+      "failure_type": "stale_funding_treated_as_recent"
+    },
+    {
+      "task_id": "TB-0145",
+      "category": "cost_pathology",
+      "probe_id": "P22",
+      "source_mode": "programmatic",
+      "difficulty": "medium",
+      "total_score": 1.0,
+      "expected_score": 0.2,
+      "dimension_scores": {
+        "pipeline_latency_ok": {
+          "weight": 0.5,
+          "score": 1.0,
+          "weighted": 0.5
+        },
+        "confidence_degraded_on_timeout": {
+          "weight": 0.3,
+          "score": 1.0,
+          "weighted": 0.3
+        },
+        "no_banned_phrases": {
+          "weight": 0.2,
+          "score": 1.0,
+          "weighted": 0.2
+        }
+      },
+      "failure_detected": true,
+      "failure_type": "playwright_timeout_causes_latency_overrun"
+    },
+    {
+      "task_id": "TB-0089",
+      "category": "tone_drift",
+      "probe_id": "P14",
+      "source_mode": "trace_derived",
+      "difficulty": "easy",
+      "total_score": 0.4,
+      "expected_score": 0.4,
+      "dimension_scores": {
+        "no_banned_phrases": {
+          "weight": 0.6,
+          "score": 0.0,
+          "weighted": 0.0
+        },
+        "word_count_ok": {
+          "weight": 0.2,
+          "score": 1.0,
+          "weighted": 0.2
+        },
+        "signal_grounding": {
+          "weight": 0.2,
+          "score": 1.0,
+          "weighted": 0.2
+        }
+      },
+      "failure_detected": true,
+      "failure_type": "banned_phrases_tone_check_false_pass"
+    },
+    {
+      "task_id": "TB-0139",
+      "category": "multi_thread_leakage",
+      "probe_id": "P20",
+      "source_mode": "hand_authored",
+      "difficulty": "critical",
+      "total_score": 0.35,
+      "expected_score": 0.1,
+      "dimension_scores": {
+        "bounce_suppression": {
+          "weight": 0.65,
+          "score": 0.0,
+          "weighted": 0.0
+        },
+        "hs_status_not_outreach": {
+          "weight": 0.25,
+          "score": 1.0,
+          "weighted": 0.25
+        },
+        "no_banned_phrases": {
+          "weight": 0.1,
+          "score": 1.0,
+          "weighted": 0.1
+        }
+      },
+      "failure_detected": true,
+      "failure_type": "bounce_replay_not_suppressed"
+    },
+    {
+      "task_id": "TB-0133",
+      "category": "multi_thread_leakage",
+      "probe_id": "P20",
+      "source_mode": "hand_authored",
+      "difficulty": "critical",
+      "total_score": 0.35,
+      "expected_score": 0.1,
+      "dimension_scores": {
+        "bounce_suppression": {
+          "weight": 0.65,
+          "score": 0.0,
+          "weighted": 0.0
+        },
+        "hs_status_not_outreach": {
+          "weight": 0.25,
+          "score": 1.0,
+          "weighted": 0.25
+        },
+        "no_banned_phrases": {
+          "weight": 0.1,
+          "score": 1.0,
+          "weighted": 0.1
+        }
+      },
+      "failure_detected": true,
+      "failure_type": "bounce_replay_not_suppressed"
+    },
+    {
+      "task_id": "TB-0073",
+      "category": "bench_over_commitment",
+      "probe_id": "P11",
+      "source_mode": "programmatic",
+      "difficulty": "critical",
+      "total_score": 0.3,
+      "expected_score": 0.15,
+      "dimension_scores": {
+        "no_headcount_commitment": {
+          "weight": 0.4,
+          "score": 0.0,
+          "weighted": 0.0
+        },
+        "bench_capacity_respected": {
+          "weight": 0.3,
+          "score": 0.0,
+          "weighted": 0.0
+        },
+        "no_banned_phrases": {
+          "weight": 0.15,
+          "score": 1.0,
+          "weighted": 0.15
+        },
+        "signal_grounding": {
+          "weight": 0.15,
+          "score": 1.0,
+          "weighted": 0.15
+        }
+      },
+      "failure_detected": true,
+      "failure_type": "bench_overcommit_without_availability_check"
+    },
+    {
+      "task_id": "TB-0042",
+      "category": "hiring_signal_over_claiming",
+      "probe_id": "P07",
+      "source_mode": "programmatic",
+      "difficulty": "medium",
+      "total_score": 1.0,
+      "expected_score": 0.2,
+      "dimension_scores": {
+        "no_exact_role_count_from_ats": {
+          "weight": 0.45,
+          "score": 1.0,
+          "weighted": 0.45
+        },
+        "confidence_aware_phrasing": {
+          "weight": 0.35,
+          "score": 1.0,
+          "weighted": 0.35
+        },
+        "no_banned_phrases": {
+          "weight": 0.2,
+          "score": 1.0,
+          "weighted": 0.2
+        }
+      },
+      "failure_detected": true,
+      "failure_type": "ats_redirect_inflates_role_count"
+    },
+    {
+      "task_id": "TB-0053",
+      "category": "hiring_signal_over_claiming",
+      "probe_id": "P09",
+      "source_mode": "programmatic",
+      "difficulty": "medium",
+      "total_score": 1.0,
+      "expected_score": 0.2,
+      "dimension_scores": {
+        "no_ai_language_for_bi_team": {
+          "weight": 0.45,
+          "score": 1.0,
+          "weighted": 0.45
+        },
+        "ai_maturity_correct": {
+          "weight": 0.35,
+          "score": 1.0,
+          "weighted": 0.35
+        },
+        "no_banned_phrases": {
+          "weight": 0.2,
+          "score": 1.0,
+          "weighted": 0.2
+        }
+      },
+      "failure_detected": true,
+      "failure_type": "bi_roles_inflate_ai_maturity_score"
+    }
+  ]
+}
