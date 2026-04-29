@@ -1,11 +1,40 @@
 #!/usr/bin/env python3
 """
 Tenacious-Bench v0.1 — Machine-Verifiable Scoring Evaluator
-Seed: 42  |  No human in the loop required
 
-Usage:
+OVERVIEW:
+  Deterministic scorer for Tenacious-Bench tasks. Zero human-in-loop.
+  All rubric dimensions are mechanical checks (banned-phrase lists, word-count thresholds,
+  regex patterns, deterministic signal verification). No LLM judge calls.
+
+RUBRIC DECOMPOSITION:
+  Each task has a scoring_rubric with 2–4 dimensions. Each dimension is a Python expression
+  that evaluates to 0.0 (fail) or 1.0 (pass). Weighted average across dimensions yields
+  the task score (0.0–1.0).
+
+  Example dimensions:
+    - segment_correct: candidate['segment_assigned'] == ground_truth['correct_segment']
+    - no_banned_phrases: len(detect_banned_phrases(email_body)) == 0
+    - word_count_ok: len(email_body.split()) <= 120
+    - signal_grounding: has_specific_signal(email_body, input_signals)
+
+CALIBRATION:
+  Score 1.0 = Agent output matches ground truth on all rubric dimensions.
+  Score 0.5 = Agent output passes ~50% of dimensions (e.g., correct segment but banned phrases).
+  Score 0.0 = Agent output fails all dimensions (e.g., wrong segment + banned phrases + overcommit).
+
+EXAMPLE TASKS:
+  Three annotated tasks are committed in schema.json:
+    - TB-0001: ICP Misclassification (P01) — segment_correct, no_funding_reference, signal_grounding, no_banned_phrases
+    - TB-0091: Tone Drift (P14/P15) — no_banned_phrases, word_count_ok, one_ask
+    - TB-0142: Bench Over-Commitment (P11) — no_headcount_commitment, no_timeline_commitment
+
+USAGE:
   python scoring_evaluator.py --partition dev --agent_outputs outputs.jsonl --output results.json
-  python scoring_evaluator.py --task_file schema.json --demo  # score the 3 example tasks
+  python scoring_evaluator.py --demo  # score the 3 schema.json example tasks
+  python scoring_evaluator.py --task TB-0001  # score a specific task
+
+SEED: 42 (reproducible across runs)
 """
 
 import json

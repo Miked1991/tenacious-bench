@@ -13,29 +13,58 @@ Tenacious-Bench is a Tenacious-specific evaluation dataset for the Conversion En
 ## Repository Structure
 
 ```
-tenacious bench/
-├── README.md                          # This file
-├── audit_memo.md                      # 600-word gap analysis vs. τ²-Bench retail
-├── schema.json                        # Task schema + 3 annotated examples
-├── scoring_evaluator.py               # Machine-verifiable scorer (no human in loop)
-├── methodology.md                     # Path A declaration, justification, partitioning
-├── datasheet.md                       # Gebru + Pushkarna documentation
-├── inter_rater_agreement.md           # 30-task self-agreement matrix
-├── cost_log.md                        # Every API / compute charge logged
-├── contamination_check.json           # N-gram, embedding, time-shift check results
-├── .gitignore
+tenacious-bench/
+├── README.md                              # Project overview, setup, quick start
+├── INDEX.md                               # Complete file index and navigation
+│
+├── CORE DELIVERABLES (Acts I & II)
+├── audit_memo.md                          # Gap analysis: 7 gaps τ²-Bench cannot grade
+├── probe_library.md                       # 36 probes across 10 failure categories
+├── failure_taxonomy.md                    # 10 categories ranked by ACV risk
+├── schema.json                            # Task schema + 3 annotated examples
+├── scoring_evaluator.py                   # Deterministic scorer (zero human-in-loop)
+├── methodology.md                         # Path A declaration + justification + partitioning
+├── datasheet.md                           # Gebru + Pushkarna documentation (7 sections)
+├── inter_rater_agreement.md               # 30-task self-agreement matrix (90% overall)
+├── cost_log.md                            # Cost transparency ($47.32 total)
+├── contamination_check.json               # Validation results (all 3 checks pass)
+│
+├── DATASET PARTITIONS
 ├── tenacious_bench_v0.1/
-│   ├── train/tasks.jsonl              # 125 tasks (50%) — training partition
-│   ├── dev/tasks.jsonl                # 75 tasks (30%) — public dev partition
-│   └── held_out/tasks.jsonl          # 50 tasks (20%) — sealed (gitignored)
+│   ├── train/tasks.jsonl                  # 125 tasks (50%) — SFT training data
+│   ├── dev/tasks.jsonl                    # 71 tasks (28.4%) — public dev partition
+│   └── held_out/tasks.jsonl               # 54 tasks (21.6%) — sealed evaluation set
+│
+├── GENERATION & VALIDATION
 ├── generation_scripts/
-│   ├── generate_dataset.py            # Reproducible generation (seed=42)
-│   ├── contamination_check.py         # N-gram + embedding + time-shift checks
-│   └── judge_filter.py                # LLM-as-a-judge quality filter
-└── synthesis_memos/
-    ├── synthetic_data_best_practices.md
-    └── llm_as_judge_survey.md
+│   ├── generate_dataset.py                # Reproducible generation (seed=42)
+│   ├── contamination_check.py             # N-gram + embedding + time-shift checks
+│   └── judge_filter.py                    # LLM-as-judge quality filter (3 dimensions)
+├── generate_pdf_report.py                 # PDF report generation script
+│
+├── SYNTHESIS & DOCUMENTATION
+├── synthesis_memos/
+│   ├── synthetic_data_best_practices.md   # Best practices for synthetic task generation
+│   └── llm_as_judge_survey.md             # LLM-as-judge approaches & calibration
+├── SCORING_REPORT.md                      # Comprehensive scoring analysis
+├── TENACIOUS_BENCH_V0.1_REPORT.pdf        # Executive PDF report
+│
+├── CONFIGURATION
+├── requirements.txt                       # Python dependencies
+├── .gitignore                             # Excludes held_out partition
+├── CHANGELOG.md                           # Version history
+├── pyproject.toml                         # Project metadata
+└── .python-version                        # Python 3.11+ requirement
 ```
+
+### Directory Descriptions
+
+| Directory | Purpose |
+|-----------|---------|
+| **Root** | Core deliverables, dataset, configuration |
+| **tenacious_bench_v0.1/** | 250-task dataset (train/dev/held_out partitions) |
+| **generation_scripts/** | Reproducible generation, contamination checks, judge filter |
+| **synthesis_memos/** | Critical engagement with common reading papers |
 
 ## Status (Interim — Wednesday submission)
 
@@ -53,28 +82,58 @@ tenacious bench/
 | II | cost_log.md | ✅ Complete |
 | III–V | Training data prep, training run, ablations, publication | 🔜 Days 4–7 |
 
-## Quick Start (Reproduce Headline Score)
+## Setup Instructions
+
+### Environment Requirements
+
+- **Python:** 3.11 or higher
+- **Key Dependencies:** 
+  - `numpy>=1.24.0` — numerical computing
+  - `pandas>=2.0.0` — data manipulation
+  - `nltk>=3.8.1` — NLP utilities
+  - `scikit-learn>=1.3.0` — ML utilities
+  - `sentence-transformers>=2.2.0` — embedding similarity checks
+  - `openai>=1.0.0`, `anthropic>=0.7.0` — LLM APIs (for generation pipeline)
+  - `jsonlines>=4.0.0` — JSONL parsing
+
+### Installation
 
 ```bash
-# 1. Clone and install
-git clone <repo-url>
+# 1. Clone repository
+git clone https://github.com/Miked1991/tenacious-bench.git
 cd tenacious-bench
+
+# 2. Create virtual environment (recommended)
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+# 3. Install dependencies
 pip install -r requirements.txt
 
-# 2. Score an agent output against the dev partition
-python scoring_evaluator.py \
-  --partition dev \
-  --agent_outputs path/to/your_outputs.jsonl \
-  --output results.json
+# 4. Verify installation
+python -c "import nltk, sklearn, numpy; print('✅ All dependencies installed')"
+```
 
-# 3. Regenerate dataset from scratch (seed=42)
+### Quick Start: Score a Sample Task
+
+```bash
+# Score the 3 example tasks from schema.json
+python scoring_evaluator.py --demo
+
+# Score the full dev partition
+python scoring_evaluator.py --partition dev --output dev_results.json
+
+# Score a specific task
+python scoring_evaluator.py --task TB-0001
+```
+
+### Regenerate Dataset from Scratch
+
+```bash
+# Reproducible generation (seed=42)
 python generation_scripts/generate_dataset.py
-```
 
-**Requirements:** Python 3.11+, `nltk`, `scikit-learn`, `numpy`
-
-```
-pip install nltk scikit-learn numpy
+# Output: 125 train, 71 dev, 54 held_out tasks
 ```
 
 ## Baseline (Week 10 Agent on Dev Partition)
@@ -104,6 +163,26 @@ pip install nltk scikit-learn numpy
 6. Write technical blog post (1,200–2,000 words).
 7. File GitHub issue on τ²-Bench repo with gap finding.
 
+## Major Artifacts
+
+### Documentation
+- **[audit_memo.md](audit_memo.md)** — 600-word gap analysis with 8+ probe IDs and 5+ trace IDs
+- **[datasheet.md](datasheet.md)** — Gebru + Pushkarna documentation (all 7 sections)
+- **[methodology.md](methodology.md)** — Path A declaration with Week 10 evidence and contamination results
+- **[probe_library.md](probe_library.md)** — 36 probes across 10 categories with trigger rates and costs
+- **[failure_taxonomy.md](failure_taxonomy.md)** — 10 categories ranked by business-cost impact
+
+### Evaluation & Validation
+- **[schema.json](schema.json)** — Task schema + 3 annotated example tasks
+- **[scoring_evaluator.py](scoring_evaluator.py)** — Deterministic scorer with rubric decomposition
+- **[inter_rater_agreement.md](inter_rater_agreement.md)** — 30-task self-agreement matrix (90% overall)
+- **[contamination_check.json](contamination_check.json)** — N-gram, embedding, time-shift validation
+
+### Synthesis & Analysis
+- **[synthesis_memos/](synthesis_memos/)** — Critical engagement with common reading papers
+- **[SCORING_REPORT.md](SCORING_REPORT.md)** — Comprehensive scoring analysis across all partitions
+- **[TENACIOUS_BENCH_V0.1_REPORT.pdf](TENACIOUS_BENCH_V0.1_REPORT.pdf)** — Executive PDF report
+
 ## Citation
 
 ```bibtex
@@ -113,7 +192,7 @@ pip install nltk scikit-learn numpy
   year         = {2026},
   month        = {April},
   institution  = {10 Academy / TRP1},
-   
-  note         = {250 tasks across 10 failure categories derived from the Tenacious Conversion Engine probe library}
+  url          = {https://github.com/Miked1991/tenacious-bench},
+  note         = {250 tasks across 10 failure categories derived from the Tenacious Conversion Engine probe library. CC-BY-4.0 license.}
 }
 ```
