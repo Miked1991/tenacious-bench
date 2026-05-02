@@ -1,0 +1,281 @@
+{
+  "_description": "Evidence graph mapping every numeric claim in the blog post and memo to its source artifact. Used for grading evidence-graph integrity.",
+  "_generated": "2026-05-01",
+  "_author": "Mikias Dagem",
+  "_note": "All training claims sourced from real Colab run (training_run_seed42_20260502.log). Ablation claims still SIMULATED — replace after ablation run.",
+  "claims": [
+    {
+      "claim_id": "EG-001",
+      "claim": "Week 10 agent achieved 72.7% on τ²-Bench retail (150 traces, retail domain only)",
+      "value": "72.7%",
+      "source_file": "audit_memo.md",
+      "source_section": "What This Proves",
+      "simulated": false
+    },
+    {
+      "claim_id": "EG-002",
+      "claim": "Tenacious-Bench dev baseline: 49.1% (Week 10 agent on dev partition)",
+      "value": "49.1%",
+      "source_file": "dev_scores.json",
+      "source_key": "overall_pass_rate",
+      "simulated": false
+    },
+    {
+      "claim_id": "EG-003",
+      "claim": "Bench Over-Commitment category pass rate: 28.0% (lowest category)",
+      "value": "28.0%",
+      "source_file": "dev_scores.json",
+      "source_key": "category_scores.bench_over_commitment",
+      "simulated": false
+    },
+    {
+      "claim_id": "EG-004",
+      "claim": "Tone Drift category pass rate on dev: 54.2%",
+      "value": "54.2%",
+      "source_file": "dev_scores.json",
+      "source_key": "category_scores.tone_drift",
+      "simulated": false
+    },
+    {
+      "claim_id": "EG-005",
+      "claim": "Dataset size: 250 tasks across 10 failure categories",
+      "value": "250",
+      "source_file": "tenacious_bench_v0.1/",
+      "source_section": "train (125) + dev (71) + held_out (54) = 250",
+      "simulated": false
+    },
+    {
+      "claim_id": "EG-006",
+      "claim": "Training partition: 125 tasks (50%)",
+      "value": "125",
+      "source_file": "tenacious_bench_v0.1/train/tasks.jsonl",
+      "source_section": "line count",
+      "simulated": false
+    },
+    {
+      "claim_id": "EG-007",
+      "claim": "Dev partition: 71 tasks (28.4%)",
+      "value": "71",
+      "source_file": "tenacious_bench_v0.1/dev/tasks.jsonl",
+      "source_section": "line count",
+      "simulated": false
+    },
+    {
+      "claim_id": "EG-008",
+      "claim": "Held-out partition: 54 tasks (21.6%)",
+      "value": "54",
+      "source_file": "tenacious_bench_v0.1/held_out/tasks.jsonl",
+      "source_section": "line count",
+      "simulated": false
+    },
+    {
+      "claim_id": "EG-009",
+      "claim": "N-gram contamination check: 0 overlaps across 6,750 held_out-vs-train pairs",
+      "value": "0 overlaps",
+      "source_file": "contamination_check.json",
+      "source_key": "ngram_check.overlaps_detected",
+      "simulated": false
+    },
+    {
+      "claim_id": "EG-010",
+      "claim": "Embedding similarity check: max cosine similarity 0.82 (threshold < 0.85)",
+      "value": "0.82",
+      "source_file": "contamination_check.json",
+      "source_key": "embedding_check.max_similarity",
+      "simulated": false
+    },
+    {
+      "claim_id": "EG-011",
+      "claim": "Inter-rater agreement: 90% overall across 30-task subset",
+      "value": "90%",
+      "source_file": "inter_rater_agreement.md",
+      "source_section": "Overall Agreement",
+      "simulated": false
+    },
+    {
+      "claim_id": "EG-012",
+      "claim": "Banned-phrases dimension IRA: 97% (highest dimension)",
+      "value": "97%",
+      "source_file": "inter_rater_agreement.md",
+      "source_section": "Per-dimension breakdown: no_banned_phrases",
+      "simulated": false
+    },
+    {
+      "claim_id": "EG-013",
+      "claim": "Bench-commitment dimension IRA: 85% (lowest dimension, still above 80% threshold)",
+      "value": "85%",
+      "source_file": "inter_rater_agreement.md",
+      "source_section": "Per-dimension breakdown: bench_commitment_accuracy",
+      "simulated": false
+    },
+    {
+      "claim_id": "EG-014",
+      "claim": "36 probes documented across 10 failure categories",
+      "value": "36",
+      "source_file": "probe_library.md",
+      "source_section": "probe count (P01–P36)",
+      "simulated": false
+    },
+    {
+      "claim_id": "EG-015",
+      "claim": "LLM tone-check false-pass rate for banned phrases: 17% (probe P14)",
+      "value": "17%",
+      "source_file": "probe_library.md",
+      "source_section": "P14: Banned Phrase Tone-Check False Pass",
+      "simulated": false
+    },
+    {
+      "claim_id": "EG-016",
+      "claim": "Probe P15: 24% of emails exceed word limit despite passing tone-check",
+      "value": "24%",
+      "source_file": "probe_library.md",
+      "source_section": "P15: Word Count Overrun",
+      "simulated": false
+    },
+    {
+      "claim_id": "EG-017",
+      "claim": "SFT training pairs after quality filter: 1,247",
+      "value": "1247",
+      "source_file": "training_data/sft_pairs.jsonl",
+      "source_section": "line count after prepare_training_data.py --min_score 0.85",
+      "simulated": false
+    },
+    {
+      "claim_id": "EG-018",
+      "claim": "Training wall time: 97.9 minutes on Colab T4 (5,871s)",
+      "value": "97.9 min",
+      "source_file": "training/training_run_seed42.log",
+      "source_line": "Train runtime: 5871.1s",
+      "simulated": false
+    },
+    {
+      "claim_id": "EG-019",
+      "claim": "Final training loss: 0.2883 (3 epochs, 441 steps); best eval loss: 0.0213",
+      "value": "0.2883",
+      "source_file": "training/training_run_seed42.log",
+      "source_line": "Final train loss: 0.2883 | Best eval loss: 0.0213 | Best checkpoint: outputs/checkpoint-441",
+      "simulated": false
+    },
+    {
+      "claim_id": "EG-020",
+      "claim": "Delta A: +19.1pp lift (trained LoRA vs. Week 10 baseline on held-out), 95% CI [14.8, 23.4], p=0.0021",
+      "value": "+19.1pp",
+      "source_file": "ablations/ablation_results_SIMULATED_by_claude.json",
+      "source_key": "deltas.delta_a",
+      "simulated": true
+    },
+    {
+      "claim_id": "EG-021",
+      "claim": "Delta B: +10.9pp lift (trained LoRA vs. prompt-engineered control on held-out), p=0.0034",
+      "value": "+10.9pp",
+      "source_file": "ablations/ablation_results_SIMULATED_by_claude.json",
+      "source_key": "deltas.delta_b",
+      "simulated": true
+    },
+    {
+      "claim_id": "EG-022",
+      "claim": "Prompt-engineered control score on held-out: 57.3%",
+      "value": "57.3%",
+      "source_file": "ablations/ablation_results_SIMULATED_by_claude.json",
+      "source_key": "conditions.prompt_engineered.score_pct",
+      "simulated": true
+    },
+    {
+      "claim_id": "EG-023",
+      "claim": "Trained LoRA score on held-out: 68.2%",
+      "value": "68.2%",
+      "source_file": "ablations/ablation_results_SIMULATED_by_claude.json",
+      "source_key": "conditions.trained_lora.score_pct",
+      "simulated": true
+    },
+    {
+      "claim_id": "EG-024",
+      "claim": "Delta C: +0.4pp on τ²-Bench retail (informational, not re-run)",
+      "value": "+0.4pp",
+      "source_file": "ablations/ablation_results_SIMULATED_by_claude.json",
+      "source_key": "deltas.delta_c",
+      "simulated": true,
+      "note": "Not re-run this week. Week 10 score of 72.7% reused per cost discipline rules."
+    },
+    {
+      "claim_id": "EG-025",
+      "claim": "Cost per task: $0.023 baseline, $0.027 with LoRA (+17.4%)",
+      "value": "+17.4% cost",
+      "source_file": "ablations/ablation_results_SIMULATED_by_claude.json",
+      "source_key": "cost_pareto",
+      "simulated": true
+    },
+    {
+      "claim_id": "EG-026",
+      "claim": "Tone Drift category: +27.1pp delta (highest per-category improvement)",
+      "value": "+27.1pp",
+      "source_file": "ablations/ablation_results_SIMULATED_by_claude.json",
+      "source_key": "per_category[0].delta_a_pp (tone_drift)",
+      "simulated": true
+    },
+    {
+      "claim_id": "EG-027",
+      "claim": "Multi-Thread Leakage: +3.8pp (smallest delta — architectural, not generative failure)",
+      "value": "+3.8pp",
+      "source_file": "ablations/ablation_results_SIMULATED_by_claude.json",
+      "source_key": "per_category[6].delta_a_pp (multi_thread_leakage)",
+      "simulated": true
+    },
+    {
+      "claim_id": "EG-028",
+      "claim": "Dataset total cost (Acts I & II): $47.32",
+      "value": "$47.32",
+      "source_file": "cost_log.md",
+      "source_section": "Summary — TOTAL",
+      "simulated": false
+    },
+    {
+      "claim_id": "EG-029",
+      "claim": "Cost per task: $0.19 (dataset construction only)",
+      "value": "$0.19",
+      "source_file": "cost_log.md",
+      "source_section": "Cost per task",
+      "simulated": false
+    },
+    {
+      "claim_id": "EG-030",
+      "claim": "Probe P11 (bench over-commitment): 100% trigger rate for segment=3 emails",
+      "value": "100%",
+      "source_file": "probe_library.md",
+      "source_section": "P11: Bench Over-Commitment",
+      "simulated": false
+    },
+    {
+      "claim_id": "EG-031",
+      "claim": "Probe P27: 18% of EU prospects booked at local midnight",
+      "value": "18%",
+      "source_file": "audit_memo.md + probe_library.md P27",
+      "source_section": "Probe P27: EU timezone scheduling",
+      "simulated": false
+    },
+    {
+      "claim_id": "EG-032",
+      "claim": "Training cost: $0 (Colab T4 free tier)",
+      "value": "$0",
+      "source_file": "cost_log.md",
+      "source_section": "Act IV: Training Run",
+      "simulated": false
+    }
+  ],
+  "simulated_claims_summary": {
+    "total_claims": 32,
+    "simulated_count": 7,
+    "real_count": 25,
+    "simulated_claim_ids": [
+      "EG-020",
+      "EG-021",
+      "EG-022",
+      "EG-023",
+      "EG-024",
+      "EG-025",
+      "EG-026",
+      "EG-027"
+    ],
+    "action_required": "Ablation scoring re-run needed with correct held_out/tasks.jsonl on Kaggle. Update EG-020 through EG-027 from real ablation_results.json. Set simulated=false for each."
+  }
+}

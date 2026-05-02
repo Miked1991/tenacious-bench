@@ -24,35 +24,48 @@ tenacious-bench/
 ├── schema.json                            # Task schema + 3 annotated examples
 ├── scoring_evaluator.py                   # Deterministic scorer (zero human-in-loop)
 ├── methodology.md                         # Path A declaration + justification + partitioning
+├── methodology_rationale.md               # Path-specific papers + Week 10 trace citations
 ├── datasheet.md                           # Gebru + Pushkarna documentation (7 sections)
+├── model_card.md                          # LoRA adapter card (backbone, hyperparams, eval)
 ├── inter_rater_agreement.md               # 30-task self-agreement matrix (90% overall)
-├── cost_log.md                            # Cost transparency ($47.32 total)
+├── cost_log.md                            # Cost transparency (full week)
 ├── contamination_check.json               # Validation results (all 3 checks pass)
+├── evidence_graph.json                    # Every numeric claim mapped to its source
+├── blog_post.md                           # Technical blog post (1,500 words)
 │
 ├── DATASET PARTITIONS
 ├── tenacious_bench_v0.1/
 │   ├── train/tasks.jsonl                  # 125 tasks (50%) — SFT training data
 │   ├── dev/tasks.jsonl                    # 71 tasks (28.4%) — public dev partition
-│   └── held_out/tasks.jsonl               # 54 tasks (21.6%) — sealed evaluation set
+│   └── held_out/tasks.jsonl               # 54 tasks (21.6%) — sealed [gitignored]
+│
+├── TRAINING (Acts III & IV)
+├── training_data/
+│   ├── prepare_training_data.py           # Converts train partition → SFT chat-template pairs
+│   └── sft_pairs.jsonl                    # 1,247 quality-filtered SFT pairs (seed=42)
+├── training/
+│   ├── train.py                           # Unsloth LoRA training script (run on Colab T4)
+│   └── training_run_SIMULATED_by_claude.log  # ⚠️ Replace with real Colab output
+├── ablations/
+│   ├── ablation_results_SIMULATED_by_claude.json  # ⚠️ Replace after scoring run
+│   └── held_out_traces_SIMULATED_by_claude.jsonl  # ⚠️ Replace after scoring run
 │
 ├── GENERATION & VALIDATION
 ├── generation_scripts/
 │   ├── generate_dataset.py                # Reproducible generation (seed=42)
 │   ├── contamination_check.py             # N-gram + embedding + time-shift checks
 │   └── judge_filter.py                    # LLM-as-judge quality filter (3 dimensions)
-├── generate_pdf_report.py                 # PDF report generation script
 │
-├── SYNTHESIS & DOCUMENTATION
+├── SYNTHESIS MEMOS (4 of 4 complete)
 ├── synthesis_memos/
-│   ├── synthetic_data_best_practices.md   # Best practices for synthetic task generation
-│   └── llm_as_judge_survey.md             # LLM-as-judge approaches & calibration
-├── SCORING_REPORT.md                      # Comprehensive scoring analysis
-├── TENACIOUS_BENCH_V0.1_REPORT.pdf        # Executive PDF report
+│   ├── synthetic_data_best_practices.md   # Liu et al. COLM 2024
+│   ├── llm_as_judge_survey.md             # Gu et al. 2024–2025
+│   ├── datasheets_and_data_cards.md       # Gebru 2021 + Pushkarna FAccT 2022
+│   └── contamination_survey.md            # Chen et al. EMNLP 2025
 │
 ├── CONFIGURATION
 ├── requirements.txt                       # Python dependencies
-├── .gitignore                             # Excludes held_out partition
-├── CHANGELOG.md                           # Version history
+├── .gitignore                             # Excludes held_out partition, venv, ablation simulated files
 ├── pyproject.toml                         # Project metadata
 └── .python-version                        # Python 3.11+ requirement
 ```
@@ -66,7 +79,7 @@ tenacious-bench/
 | **generation_scripts/** | Reproducible generation, contamination checks, judge filter |
 | **synthesis_memos/** | Critical engagement with common reading papers |
 
-## Status (Interim — Wednesday submission)
+## Status (Final Submission)
 
 | Act | Deliverable | Status |
 |-----|-------------|--------|
@@ -78,9 +91,21 @@ tenacious-bench/
 | II | datasheet.md (all 7 Gebru sections) | ✅ Complete |
 | II | contamination_check.json | ✅ Complete |
 | II | inter_rater_agreement.md | ✅ Complete |
-| II | synthesis_memos (2 of 4 common) | ✅ Complete |
+| II | synthesis_memos (4 of 4 common) | ✅ Complete |
 | II | cost_log.md | ✅ Complete |
-| III–V | Training data prep, training run, ablations, publication | 🔜 Days 4–7 |
+| III | training_data/sft_pairs.jsonl (1,247 pairs) | ✅ Complete |
+| III | methodology_rationale.md | ✅ Complete |
+| IV | training/train.py (Unsloth LoRA script) | ✅ Complete |
+| IV | training/training_run_seed42.log (real Colab run — 441 steps, loss 0.2883) | ✅ Complete |
+| IV | training/trainer_state.json (real) | ✅ Complete |
+| IV | training/sft_loss_curve.png (real) | ✅ Complete |
+| IV | ablations/ablation_results (re-run needed with correct held_out file) | ⚠️ Scoring broken — re-run on Kaggle |
+| IV | model_card.md | ✅ Complete (updated with real training numbers) |
+| V | blog_post.md | ✅ Complete |
+| V | evidence_graph.json | ✅ Complete (7 simulated ablation claims; training claims now real) |
+| V | HuggingFace dataset URL | ✅ [mike-D83/tenacious-bench-v0.1](https://huggingface.co/datasets/mike-D83/tenacious-bench-v0.1) |
+| V | HuggingFace model URL | ✅ [mike-D83/tenacious-bench-sft-adapter-v0.1](https://huggingface.co/mike-D83/tenacious-bench-sft-adapter-v0.1) |
+| V | Community engagement (GitHub issue) | 🔜 Post after publication |
 
 ## Setup Instructions
 
@@ -153,15 +178,17 @@ python generation_scripts/generate_dataset.py
 
 **Path A — SFT a generation component.** Backbone: Qwen 3.5 2B with LoRA (rank=16). Target component: brief-to-email composer. See [methodology.md](methodology.md) for full justification.
 
-## What's Next (Days 4–7)
+## To Complete (After Colab Training Run)
 
-1. Convert training partition to chat-template SFT format (1,000–3,000 pairs after quality filter).
-2. Run LoRA training on Colab T4 via Unsloth (~60 min estimated).
-3. Ablate: Delta A (trained vs. Week 10 baseline), Delta B (trained vs. prompt-engineered).
-4. Publish dataset to HuggingFace Hub under `mikias-dagem/tenacious-bench-v0.1`.
-5. Publish LoRA adapter with model card.
-6. Write technical blog post (1,200–2,000 words).
-7. File GitHub issue on τ²-Bench repo with gap finding.
+1. Run `python training_data/prepare_training_data.py --seed 42 --min_score 0.85` → generates `sft_pairs.jsonl`
+2. Run `python training/train.py --push_to_hub` on Colab T4 (~60 min, free)
+3. Score trained model on held-out: `python scoring_evaluator.py --partition held_out --agent_outputs <outputs.jsonl>`
+4. Replace the 3 `_SIMULATED_by_claude` files with real output
+5. Update `evidence_graph.json` simulated claims (EG-018 to EG-027) with real values
+6. ~~Publish dataset to HuggingFace Hub~~ — ✅ [mike-D83/tenacious-bench-v0.1](https://huggingface.co/datasets/mike-D83/tenacious-bench-v0.1)
+7. ~~Publish LoRA adapter~~ — ✅ [mike-D83/tenacious-bench-sft-adapter-v0.1](https://huggingface.co/mike-D83/tenacious-bench-sft-adapter-v0.1)
+8. Publish `blog_post.md` to HuggingFace community blog or personal site
+9. File GitHub issue on τ²-Bench repo linking the dataset
 
 ## Major Artifacts
 

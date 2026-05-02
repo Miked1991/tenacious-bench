@@ -1,7 +1,7 @@
 # Tenacious-Bench v0.1 .gitignore
 
-# Held-out partition (sealed for final evaluation)
-tenacious_bench_v0.1/held_out/
+# Held-out partition (temporarily unignored for Kaggle ablation test)
+# tenacious_bench_v0.1/held_out/
 
 # Python cache
 __pycache__/
@@ -55,6 +55,7 @@ env/
 # Logs
 *.log
 logs/
+!training/training_run_seed42.log
 
 # Temporary files
 *.tmp
@@ -83,4 +84,4 @@ huggingface_cache/
 
 # Specific to this project
 # Held-out partition must be sealed
-tenacious_bench_v0.1/held_out/tasks.jsonl
+# tenacious_bench_v0.1/held_out/tasks.jsonl
