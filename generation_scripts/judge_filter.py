@@ -2,20 +2,41 @@
 """
 Tenacious-Bench v0.1 — Judge Quality Filter
 
-Scores each task on three dimensions (1–5):
-  - input_coherence          : prospect fields are internally consistent
-  - ground_truth_verifiability: ground truth can be verified by a script
-  - rubric_clarity           : rubric dimensions are clear and implement-able
+Modes:
+  1. Pointwise (default): Score each task on three dimensions (1–5).
+       - input_coherence          : prospect fields are internally consistent
+       - ground_truth_verifiability: ground truth can be verified by a script
+       - rubric_clarity           : rubric dimensions are clear and implement-able
+     Tasks with mean score >= 4.0 pass.
 
-Tasks with mean score >= 4.0 pass. Runs in heuristic mode (no API calls) by default;
-pass --llm to call an Anthropic model for richer judgments.
+  2. Pairwise (--pairwise): Compare two candidate outputs for the same task.
+     Given JSONL files A and B (matched by task_id), report which output is
+     better according to the scoring rubric and by how much. Used to:
+       - Validate chosen > rejected in preference datasets
+       - Compare model variants (baseline vs trained)
+       - Construct DPO/preference pairs from SFT-format data
+
+Runs in heuristic mode (no API calls) by default; pass --llm to call an
+Anthropic model for richer judgments.
 
 Run:
   cd "tenacious bench"
+  # Pointwise
   python generation_scripts/judge_filter.py --partition train
   python generation_scripts/judge_filter.py --partition dev --report judge_report.json
   python generation_scripts/judge_filter.py --input tasks.jsonl --output filtered.jsonl
   python generation_scripts/judge_filter.py --partition held_out --llm --model claude-haiku-4-5-20251001
+
+  # Pairwise
+  python generation_scripts/judge_filter.py --pairwise \\
+      --input_a ablations/baseline_outputs.jsonl \\
+      --input_b ablations/trained_outputs.jsonl \\
+      --report pairwise_report.json
+
+  # Generate preference pairs (adds 'rejected' field from injected failures)
+  python generation_scripts/judge_filter.py --generate-pairs \\
+      --input training_data/preferences_train.jsonl \\
+      --output training_data/dpo_pairs_train.jsonl
 """
 
 import json
@@ -234,15 +255,134 @@ def llm_judge(task: Dict, model: str = "claude-haiku-4-5-20251001") -> Dict:
     }
 
 
+# ── Pairwise comparison ───────────────────────────────────────────────────────
+
+import sys as _sys
+_ROOT_FOR_SCORER = Path(__file__).parent.parent
+_sys.path.insert(0, str(_ROOT_FOR_SCORER))
+
+
+def _score_candidate(task: Dict, candidate_output: Dict) -> float:
+    """Score a single candidate_output against a task's rubric. Returns 0.0–1.0."""
+    try:
+        from scoring_evaluator import score_task as _score_task
+        patched = {**task, "candidate_output": candidate_output}
+        return _score_task(patched)["total_score"]
+    except Exception:
+        return 0.0
+
+
+def pairwise_compare(
+    tasks_by_id: Dict[str, Dict],
+    outputs_a: Dict[str, Dict],
+    outputs_b: Dict[str, Dict],
+    label_a: str = "A",
+    label_b: str = "B",
+) -> Dict:
+    """
+    Compare two sets of candidate outputs on the same tasks using the scoring rubric.
+    Returns per-task winner decisions and aggregate win rates.
+    """
+    per_task = []
+    a_wins = b_wins = ties = 0
+
+    for task_id, task in sorted(tasks_by_id.items()):
+        if task_id not in outputs_a or task_id not in outputs_b:
+            continue
+        score_a = _score_candidate(task, outputs_a[task_id])
+        score_b = _score_candidate(task, outputs_b[task_id])
+        delta = round(score_a - score_b, 4)
+
+        if delta > 0.05:
+            winner = label_a
+            a_wins += 1
+        elif delta < -0.05:
+            winner = label_b
+            b_wins += 1
+        else:
+            winner = "tie"
+            ties += 1
+
+        per_task.append({
+            "task_id": task_id,
+            "category": task.get("category", ""),
+            f"score_{label_a}": round(score_a, 4),
+            f"score_{label_b}": round(score_b, 4),
+            "delta_a_minus_b": delta,
+            "winner": winner,
+        })
+
+    n = len(per_task)
+    return {
+        "n_compared": n,
+        "label_a": label_a,
+        "label_b": label_b,
+        "a_wins": a_wins,
+        "b_wins": b_wins,
+        "ties": ties,
+        "a_win_rate": round(a_wins / n * 100, 1) if n else 0.0,
+        "b_win_rate": round(b_wins / n * 100, 1) if n else 0.0,
+        "mean_score_a": round(sum(r[f"score_{label_a}"] for r in per_task) / n, 4) if n else 0.0,
+        "mean_score_b": round(sum(r[f"score_{label_b}"] for r in per_task) / n, 4) if n else 0.0,
+        "per_task": per_task,
+    }
+
+
+# ── Failure injection for preference pair generation ──────────────────────────
+
+_INJECTED_BANNED = ["leverage", "world-class", "game-changer", "synergy"]
+
+
+def _inject_failure(chosen_text: str, category: str) -> str:
+    """Produce a 'rejected' variant by injecting known failure patterns into chosen."""
+    if category in ("tone_drift", "icp_misclassification"):
+        return chosen_text + "\n\nOur world-class, game-changer platform can leverage synergy for you."
+    if category in ("bench_over_commitment",):
+        return chosen_text.replace(
+            "we'd scope headcount together on a call",
+            "we can deploy a 10-person team within two weeks",
+        ) if "scope headcount" in chosen_text else (
+            chosen_text + "\n\nWe can staff 10 engineers within 2 weeks."
+        )
+    if category in ("hiring_signal_over_claiming",):
+        return chosen_text + "\n\nYour team is clearly scaling rapidly — don't miss out."
+    # Generic fallback: add three banned phrases to guarantee rubric failure
+    return chosen_text + f"\n\nWe offer {_INJECTED_BANNED[0]} and {_INJECTED_BANNED[1]} solutions."
+
+
+def generate_preference_pairs(sft_records: List[Dict]) -> List[Dict]:
+    """
+    Transform SFT-format records (chosen only) into DPO preference pairs by
+    injecting rubric-violating failures into each chosen to produce a rejected.
+
+    Output format per record:
+      { system, prompt, chosen, rejected, task_id, category, ... }
+    """
+    pairs = []
+    for rec in sft_records:
+        chosen = rec.get("chosen", "")
+        category = rec.get("category", "")
+        rejected = _inject_failure(chosen, category)
+        pairs.append({**rec, "rejected": rejected})
+    return pairs
+
+
 # ── Main ──────────────────────────────────────────────────────────────────────
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Tenacious-Bench judge quality filter")
-    src = parser.add_mutually_exclusive_group(required=True)
-    src.add_argument("--partition", choices=["train", "dev", "held_out"],
-                     help="Partition to filter")
-    src.add_argument("--input", type=Path,
-                     help="Input JSONL file path")
+
+    mode_group = parser.add_mutually_exclusive_group(required=True)
+    mode_group.add_argument("--partition", choices=["train", "dev", "held_out"],
+                            help="Pointwise: partition to filter")
+    mode_group.add_argument("--input", type=Path,
+                            help="Pointwise: input JSONL file path")
+    mode_group.add_argument("--pairwise", action="store_true",
+                            help="Pairwise mode: compare --input_a vs --input_b")
+    mode_group.add_argument("--generate-pairs", action="store_true", dest="generate_pairs",
+                            help="Generate DPO preference pairs from SFT-format chosen-only JSONL")
+
+    # Pointwise options
     parser.add_argument("--output", type=Path, default=None,
                         help="Output filtered JSONL (default: <input_stem>_filtered.jsonl)")
     parser.add_argument("--llm", action="store_true",
@@ -250,9 +390,87 @@ def main() -> None:
     parser.add_argument("--model", default="claude-haiku-4-5-20251001",
                         help="Anthropic model ID for --llm mode")
     parser.add_argument("--report", type=Path, default=None,
-                        help="Save per-task judgment report JSON to this path")
+                        help="Save per-task judgment report JSON")
+
+    # Pairwise options
+    parser.add_argument("--input_a", type=Path, default=None,
+                        help="Pairwise: JSONL with candidate_outputs for condition A")
+    parser.add_argument("--input_b", type=Path, default=None,
+                        help="Pairwise: JSONL with candidate_outputs for condition B")
+    parser.add_argument("--label_a", default="baseline",
+                        help="Pairwise: label for condition A (default: baseline)")
+    parser.add_argument("--label_b", default="trained",
+                        help="Pairwise: label for condition B (default: trained)")
+    parser.add_argument("--tasks_jsonl", type=Path, default=None,
+                        help="Pairwise: tasks JSONL providing ground truth and rubrics")
+
     args = parser.parse_args()
 
+    # ── Generate preference pairs ─────────────────────────────────────────────
+    if args.generate_pairs:
+        if not args.input or not args.input.exists():
+            print("ERROR: --generate-pairs requires --input <sft_format.jsonl>")
+            sys.exit(1)
+        records = read_jsonl(args.input)
+        pairs = generate_preference_pairs(records)
+        out_path = args.output or args.input.parent / (args.input.stem + "_dpo.jsonl")
+        write_jsonl(out_path, pairs)
+        chosen_cnt = sum(1 for r in pairs if r.get("chosen"))
+        rejected_cnt = sum(1 for r in pairs if r.get("rejected"))
+        print(f"Generated {len(pairs)} DPO pairs → {out_path}")
+        print(f"  chosen fields: {chosen_cnt}  rejected fields: {rejected_cnt}")
+        return
+
+    # ── Pairwise comparison ───────────────────────────────────────────────────
+    if args.pairwise:
+        if not args.input_a or not args.input_b:
+            print("ERROR: --pairwise requires --input_a and --input_b")
+            sys.exit(1)
+        for p, label in [(args.input_a, "input_a"), (args.input_b, "input_b")]:
+            if not p.exists():
+                print(f"ERROR: {label} not found: {p}")
+                sys.exit(1)
+
+        tasks_path = args.tasks_jsonl or BENCH_DIR / "held_out" / "tasks.jsonl"
+        if not tasks_path.exists():
+            tasks_path = BENCH_DIR / "dev" / "tasks.jsonl"
+        tasks_list = read_jsonl(tasks_path)
+        tasks_by_id = {t["task_id"]: t for t in tasks_list}
+
+        def _load_outputs(path: Path) -> Dict[str, Dict]:
+            outputs: Dict[str, Dict] = {}
+            for rec in read_jsonl(path):
+                tid = rec.get("task_id")
+                if tid:
+                    outputs[tid] = rec.get("candidate_output", rec)
+            return outputs
+
+        outputs_a = _load_outputs(args.input_a)
+        outputs_b = _load_outputs(args.input_b)
+
+        print(f"Comparing {len(outputs_a)} outputs from A ({args.label_a}) "
+              f"vs {len(outputs_b)} outputs from B ({args.label_b})...")
+        result = pairwise_compare(tasks_by_id, outputs_a, outputs_b,
+                                  label_a=args.label_a, label_b=args.label_b)
+
+        print(f"\n{'='*55}")
+        print(f"Pairwise judge result  ({result['n_compared']} matched pairs)")
+        print(f"{'='*55}")
+        print(f"  {args.label_a} wins : {result['a_wins']:3d}  ({result['a_win_rate']:.1f}%)")
+        print(f"  {args.label_b} wins : {result['b_wins']:3d}  ({result['b_win_rate']:.1f}%)")
+        print(f"  Ties        : {result['ties']:3d}")
+        print(f"  Mean score {args.label_a}: {result['mean_score_a']:.4f}")
+        print(f"  Mean score {args.label_b}: {result['mean_score_b']:.4f}")
+        print(f"  Delta (A-B) : {result['mean_score_a'] - result['mean_score_b']:+.4f}")
+        print(f"{'='*55}")
+
+        if args.report:
+            with open(args.report, "w", encoding="utf-8") as f:
+                json.dump(result, f, indent=2)
+            print(f"  Pairwise report: {args.report}")
+        return
+
+    # ── Pointwise ─────────────────────────────────────────────────────────────
     in_path = (BENCH_DIR / args.partition / "tasks.jsonl") if args.partition else args.input
     if not in_path.exists():
         print(f"ERROR: {in_path} not found")

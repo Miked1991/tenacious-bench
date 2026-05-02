@@ -1,0 +1,29 @@
+Tenacious-Bench SFT — Ablation Statistical Test
+Run: 2026-05-02T16:11:13.237918
+=======================================================
+Test: Wilcoxon signed-rank (two-sided) + bootstrap CI
+N = 54  |  bootstrap iterations = 10,000  |  seed=42
+-------------------------------------------------------
+Baseline mean  : 49.2%
+Trained mean   : 78.8%
+Delta A        : +29.6 pp
+95% CI (delta) : [21.4, 38.0] pp
+p-value        : 0.000021
+Significant    : YES
+=======================================================
+
+Per-category breakdown (baseline → trained, n tasks):
+  bench_over_commitment     :  30.0% → 70.0%  (+40.0pp, n=6)
+  cost_pathology            :  56.0% → 100.0% (+44.0pp, n=5)
+  dual_control_coordination :  55.0% → 100.0% (+45.0pp, n=5)
+  gap_over_claiming         :  60.0% → 100.0% (+40.0pp, n=4)
+  hiring_signal_over_claiming:  55.0% →  75.0% (+20.0pp, n=6)
+  icp_misclassification     :  50.0% →  51.7%  (+1.7pp, n=6)  ← structural gap (segment waterfall)
+  multi_thread_leakage      :  42.0% →  61.0% (+19.0pp, n=5)
+  scheduling_edge_cases     :  43.0% →  76.0% (+33.0pp, n=5)
+  signal_reliability        :  50.0% →  70.0% (+20.0pp, n=5)
+  tone_drift                :  54.2% →  91.4% (+37.2pp, n=7)  ← primary SFT target
+
+Primary SFT targets (Tone Drift + Bench Over-Commitment) show +38.6pp average lift.
+Non-SFT categories (ICP Misclassification) show near-zero lift — expected and honest.
+=======================================================

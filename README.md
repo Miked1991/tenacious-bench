@@ -105,7 +105,8 @@ tenacious-bench/
 | V | evidence_graph.json | ✅ Complete (7 simulated ablation claims; training claims now real) |
 | V | HuggingFace dataset URL | ✅ [mike-D83/tenacious-bench-v0.1](https://huggingface.co/datasets/mike-D83/tenacious-bench-v0.1) |
 | V | HuggingFace model URL | ✅ [mike-D83/tenacious-bench-sft-adapter-v0.1](https://huggingface.co/mike-D83/tenacious-bench-sft-adapter-v0.1) |
-| V | Community engagement (GitHub issue) | 🔜 Post after publication |
+| V | Blog post (Medium) | ✅ [medium.com/@mikiasdagem/when-your-benchmark-lies...](https://medium.com/@mikiasdagem/when-your-benchmark-lies-building-a-sales-domain-evaluation-dataset-from-36-failure-probes-5bfb5eb2feb8) |
+| V | Community engagement (τ²-Bench cross-link) | ✅ [github.com/yifanmai/tau2/issues/147](https://github.com/yifanmai/tau2/issues/147) |
 
 ## Setup Instructions
 

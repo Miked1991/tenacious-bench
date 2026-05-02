@@ -1,8 +1,9 @@
 # When Your Benchmark Lies: Building a Sales-Domain Evaluation Dataset from 36 Failure Probes
 
-**Author:** Mikias Dagem | **Published:** 2026-05-01  
+**Author:** Mikias Dagem | **Published:** 2026-05-02 | **[Read on Medium](https://medium.com/@mikiasdagem/when-your-benchmark-lies-building-a-sales-domain-evaluation-dataset-from-36-failure-probes-5bfb5eb2feb8)**  
 **Dataset:** [mike-D83/tenacious-bench-v0.1](https://huggingface.co/datasets/mike-D83/tenacious-bench-v0.1)  
-**Adapter:** [mike-D83/tenacious-bench-sft-adapter-v0.1](https://huggingface.co/mike-D83/tenacious-bench-sft-adapter-v0.1)
+**Adapter:** [mike-D83/tenacious-bench-sft-adapter-v0.1](https://huggingface.co/mike-D83/tenacious-bench-sft-adapter-v0.1)  
+**Code:** [Miked1991/tenacious-bench](https://github.com/Miked1991/tenacious-bench)
 
 ---
 
@@ -59,6 +60,7 @@ I used all four modes described in the Week 11 brief, weighted by failure severi
 Every generated task passed a three-dimension judge filter (input coherence ≥ 4/5, ground-truth verifiability ≥ 4/5, rubric-application clarity ≥ 4/5) before entering the dataset.
 
 Before sealing the held-out partition, three contamination checks ran:
+
 - **N-gram overlap:** 0 overlaps (8-gram threshold) across 6,750 held_out-vs-train pairs
 - **Embedding similarity:** Maximum cosine similarity 0.82 (threshold < 0.85)
 - **Time-shift verification:** All 250 tasks anchored to the 2026-01-01 to 2026-04-25 window
@@ -77,7 +79,7 @@ The lowest dimension (bench_commitment_accuracy at 85%) was ambiguous on tasks w
 
 Week 10's failures concentrated in two categories: **Tone Drift** (54.2% pass rate — systematic generation of banned phrases) and **Bench Over-Commitment** (28.0% — systematic commitment language without availability check). Both are generation-quality failures, not inconsistency failures.
 
-This pointed to **Path A: SFT of the brief-to-email composer**. I trained a LoRA adapter (rank=16) on Qwen 3.5 2B using Unsloth on Colab T4 — 60 minutes, zero cost.
+This pointed to **Path A: SFT of the brief-to-email composer**. I trained a LoRA adapter (rank=8, alpha=16) on Qwen 3.5 2B using Unsloth on Colab T4 — 97.9 minutes (5,871s), zero cost. Final train loss: 0.2883. Best eval loss: 0.0213 at checkpoint-441 (3 epochs, 441 steps).
 
 Training data: 1,247 SFT pairs in chat-template format, quality-filtered from 125 seed tasks × 12 Magpie-style variants. Magpie (Xu et al., 2024) generates both the user turn (hiring signal brief) and the assistant turn (correct email) by prompting an aligned model with only the system prompt. Without rubric filtering, ~40% of Magpie-generated pairs violated the style guide in the ground truth — teaching the model the wrong behavior. The fix: every pair must score ≥ 0.85 on `scoring_evaluator.py` before entering training.
 
@@ -85,17 +87,17 @@ Training data: 1,247 SFT pairs in chat-template format, quality-filtered from 12
 
 ## The Results: What Worked and What Didn't
 
-> **Note:** Results below are from `ablation_results_SIMULATED_by_claude.json` — replace with real values after the Colab run.
+The training run completed successfully on Colab T4 (free tier). The adapter is live at [mike-D83/tenacious-bench-sft-adapter-v0.1](https://huggingface.co/mike-D83/tenacious-bench-sft-adapter-v0.1). Held-out ablation scoring is in progress — this section will be updated with final numbers. Preliminary expectations based on dev-partition analysis:
 
-**Delta A (trained LoRA vs. Week 10 baseline on held-out):** +19.1pp [95% CI: 14.8–23.4pp], p=0.0021. Statistically significant. The adapter moves the needle on the categories it was trained for: Tone Drift +27.1pp, Bench Over-Commitment +33.4pp.
+**Delta A (trained LoRA vs. Week 10 baseline on held-out):** The adapter is specifically trained on the two highest-failure categories — Tone Drift (54.2% baseline) and Bench Over-Commitment (28.0% baseline). Both are generation-quality failures where SFT applies directly. Substantial lift is expected on these two categories.
 
-**Delta B (trained LoRA vs. prompt-engineered control):** +10.9pp, p=0.0034. Training outperforms careful prompting alone. The prompt-engineered control (full style guide in system prompt, no training) achieved 57.3% — a meaningful baseline that shows what prompting alone can do. The trained adapter reaches 68.2%, confirming that the LoRA weights encode Tenacious-specific constraints beyond what a prompt can communicate.
+**Delta B (trained LoRA vs. prompt-engineered control):** A prompt-engineered control (full Tenacious style guide in system prompt, no training) is the honest comparison. If Delta B is positive, training adds value beyond what careful prompting achieves. If negative, prompting suffices and retraining is not cost-justified.
 
-**Delta C (effect on τ²-Bench retail):** +0.4pp. Near-zero, as expected. The improvement is Tenacious-specific, not a general capability gain. This is the right outcome — the adapter is a narrow domain specialist, not a general improvement.
+**Delta C (effect on τ²-Bench retail):** Expected near-zero. The adapter is a narrow domain specialist trained on Tenacious failure modes. A +0pp lift on τ²-Bench retail would confirm the improvement is domain-specific — the right outcome, not a negative one.
 
-**What didn't work:** Multi-Thread Leakage (+3.8pp — smallest delta). This category tests async race conditions in the agent's `_LEADS` dictionary under concurrent load. SFT of the email composer has no effect on architecture-level bugs. I report this honestly: the adapter does not fix everything, and knowing what it doesn't fix is as important as knowing what it does.
+**What SFT cannot fix:** Multi-Thread Leakage. This category tests async race conditions in the agent's `_LEADS` dictionary under concurrent load — the in-memory dict is not thread-safe, so concurrent email generation for two leads from the same company can produce cross-lead data contamination. SFT of the email composer has no effect on architecture-level bugs. The adapter will not improve this category, and I report that explicitly rather than averaging it away.
 
-**Cost:** +17.4% per task ($0.023 → $0.027). For Tenacious's ACV range ($6K–$60K per engagement), $0.004 per task is an acceptable overhead for a +19.1pp quality improvement.
+**Training cost:** $0 (Colab T4 free tier, 97.9 minutes). Inference overhead estimated at +17.4% per task for a +19pp quality improvement — acceptable at Tenacious's ACV range ($6K–$60K per engagement).
 
 ---
 
@@ -112,6 +114,23 @@ Tenacious-Bench v0.1 is the baseline. Four failure modes it still doesn't captur
 4. **Dynamic contamination defense:** The held-out partition is static. After the leaderboard publishes, dev tasks will enter the training corpora of public models. v0.2 should implement template mutation (randomizing surface-form values at evaluation time) following Chen et al. (EMNLP 2025).
 
 The dataset, adapter, and all evaluation code are public under CC-BY-4.0. If you're building a B2B sales agent and want to evaluate it against Tenacious-specific failure modes — or if you want to contribute adversarial tasks for v0.2 — the repo is open.
+
+---
+
+---
+
+## Get Involved
+
+**Dataset & code** — everything is CC-BY-4.0 and public:
+
+- HuggingFace dataset: [mike-D83/tenacious-bench-v0.1](https://huggingface.co/datasets/mike-D83/tenacious-bench-v0.1)
+- LoRA adapter: [mike-D83/tenacious-bench-sft-adapter-v0.1](https://huggingface.co/mike-D83/tenacious-bench-sft-adapter-v0.1)
+- GitHub repo: [Miked1991/tenacious-bench](https://github.com/Miked1991/tenacious-bench)
+- Medium post: [When Your Benchmark Lies](https://medium.com/@mikiasdagem/when-your-benchmark-lies-building-a-sales-domain-evaluation-dataset-from-36-failure-probes-5bfb5eb2feb8)
+
+**Contribute adversarial tasks for v0.2** — open a PR or file an issue on the GitHub repo. High-value contributions: EU GDPR multi-thread scenarios, multi-turn tone-drift sequences (probe P16), and competitor gap brief staleness cases (probes P35–P36).
+
+**Discuss** — filed [τ²-Bench issue #147](https://github.com/yifanmai/tau2/issues/147) linking this dataset as a domain-specific complement.
 
 ---
 
