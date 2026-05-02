@@ -1,0 +1,115 @@
+{
+  "_description": "Tenacious-Bench v0.1 ablation results",
+  "_generated": "2026-05-02",
+  "conditions": {
+    "baseline": {
+      "description": "Week 10 agent (candidate_output from tasks.jsonl)",
+      "n_tasks": 54,
+      "score_pct": 77.8
+    }
+  },
+  "per_category_baseline": {
+    "bench_over_commitment": {
+      "n": 6,
+      "passed": 4,
+      "pass_rate": 66.7
+    },
+    "cost_pathology": {
+      "n": 5,
+      "passed": 5,
+      "pass_rate": 100.0
+    },
+    "dual_control_coordination": {
+      "n": 5,
+      "passed": 5,
+      "pass_rate": 100.0
+    },
+    "gap_over_claiming": {
+      "n": 4,
+      "passed": 4,
+      "pass_rate": 100.0
+    },
+    "hiring_signal_over_claiming": {
+      "n": 6,
+      "passed": 6,
+      "pass_rate": 100.0
+    },
+    "icp_misclassification": {
+      "n": 6,
+      "passed": 2,
+      "pass_rate": 33.3
+    },
+    "multi_thread_leakage": {
+      "n": 5,
+      "passed": 2,
+      "pass_rate": 40.0
+    },
+    "scheduling_edge_cases": {
+      "n": 5,
+      "passed": 3,
+      "pass_rate": 60.0
+    },
+    "signal_reliability": {
+      "n": 5,
+      "passed": 5,
+      "pass_rate": 100.0
+    },
+    "tone_drift": {
+      "n": 7,
+      "passed": 6,
+      "pass_rate": 85.7
+    }
+  },
+  "per_category": [
+    {
+      "category": "bench_over_commitment",
+      "n": 6,
+      "baseline_pass_rate": 66.7
+    },
+    {
+      "category": "cost_pathology",
+      "n": 5,
+      "baseline_pass_rate": 100.0
+    },
+    {
+      "category": "dual_control_coordination",
+      "n": 5,
+      "baseline_pass_rate": 100.0
+    },
+    {
+      "category": "gap_over_claiming",
+      "n": 4,
+      "baseline_pass_rate": 100.0
+    },
+    {
+      "category": "hiring_signal_over_claiming",
+      "n": 6,
+      "baseline_pass_rate": 100.0
+    },
+    {
+      "category": "icp_misclassification",
+      "n": 6,
+      "baseline_pass_rate": 33.3
+    },
+    {
+      "category": "multi_thread_leakage",
+      "n": 5,
+      "baseline_pass_rate": 40.0
+    },
+    {
+      "category": "scheduling_edge_cases",
+      "n": 5,
+      "baseline_pass_rate": 60.0
+    },
+    {
+      "category": "signal_reliability",
+      "n": 5,
+      "baseline_pass_rate": 100.0
+    },
+    {
+      "category": "tone_drift",
+      "n": 7,
+      "baseline_pass_rate": 85.7
+    }
+  ]
+}
