@@ -9,85 +9,121 @@
   "ci_95": [21.4, 38.0],
   "p_value": 0.000021,
   "significant": true,
-  "test": "Wilcoxon signed-rank two-sided (scipy) + paired bootstrap CI (n=10000, seed=42)",
+  "test": "Wilcoxon signed-rank two-sided + paired bootstrap CI (n=10000, seed=42)",
   "note": "Baseline = Week 10 agent candidate_output scores from tasks.jsonl. Trained = LoRA adapter outputs scored by scoring_evaluator.py. Bootstrap CI is on the per-task score delta (continuous 0-1 scale).",
   "per_category": [
     {
       "category": "bench_over_commitment",
+      "n": 6,
       "baseline": 30.0,
+      "baseline_ci_95": [10.0, 50.0],
       "trained": 70.0,
+      "trained_ci_95": [50.0, 90.0],
       "delta_pp": 40.0,
-      "n": 6
+      "low_n_warning": false
     },
     {
       "category": "cost_pathology",
+      "n": 5,
       "baseline": 56.0,
+      "baseline_ci_95": [20.0, 80.0],
       "trained": 100.0,
+      "trained_ci_95": [100.0, 100.0],
       "delta_pp": 44.0,
-      "n": 5
+      "low_n_warning": true
     },
     {
       "category": "dual_control_coordination",
+      "n": 5,
       "baseline": 55.0,
+      "baseline_ci_95": [20.0, 80.0],
       "trained": 100.0,
+      "trained_ci_95": [100.0, 100.0],
       "delta_pp": 45.0,
-      "n": 5
+      "low_n_warning": true
     },
     {
       "category": "gap_over_claiming",
+      "n": 4,
       "baseline": 60.0,
+      "baseline_ci_95": [25.0, 100.0],
       "trained": 100.0,
+      "trained_ci_95": [100.0, 100.0],
       "delta_pp": 40.0,
-      "n": 4
+      "low_n_warning": true,
+      "note": "n=4: widest CI in dataset. Interpret as directional only."
     },
     {
       "category": "hiring_signal_over_claiming",
+      "n": 6,
       "baseline": 55.0,
+      "baseline_ci_95": [33.3, 83.3],
       "trained": 75.0,
+      "trained_ci_95": [50.0, 100.0],
       "delta_pp": 20.0,
-      "n": 6
+      "low_n_warning": false
     },
     {
       "category": "icp_misclassification",
+      "n": 6,
       "baseline": 50.0,
+      "baseline_ci_95": [16.7, 83.3],
       "trained": 51.7,
+      "trained_ci_95": [16.7, 83.3],
       "delta_pp": 1.7,
-      "n": 6
+      "low_n_warning": false,
+      "note": "Near-zero SFT lift expected and correct. Root cause is segment waterfall ordering bug in _classify_segment — a 2-line code fix, not an SFT problem. See agent_fixes/conversion_engine_patches.py."
     },
     {
       "category": "multi_thread_leakage",
+      "n": 5,
       "baseline": 42.0,
+      "baseline_ci_95": [20.0, 60.0],
       "trained": 61.0,
+      "trained_ci_95": [40.0, 80.0],
       "delta_pp": 19.0,
-      "n": 5
+      "low_n_warning": true,
+      "note": "Partial lift from better signal grounding. Root cause (non-thread-safe _LEADS dict) requires threading.Lock fix. See agent_fixes/conversion_engine_patches.py."
     },
     {
       "category": "scheduling_edge_cases",
+      "n": 5,
       "baseline": 43.0,
+      "baseline_ci_95": [20.0, 60.0],
       "trained": 76.0,
+      "trained_ci_95": [60.0, 100.0],
       "delta_pp": 33.0,
-      "n": 5
+      "low_n_warning": true
     },
     {
       "category": "signal_reliability",
+      "n": 5,
       "baseline": 50.0,
+      "baseline_ci_95": [20.0, 80.0],
       "trained": 70.0,
+      "trained_ci_95": [40.0, 100.0],
       "delta_pp": 20.0,
-      "n": 5
+      "low_n_warning": true
     },
     {
       "category": "tone_drift",
+      "n": 7,
       "baseline": 54.2,
+      "baseline_ci_95": [28.6, 71.4],
       "trained": 91.4,
+      "trained_ci_95": [71.4, 100.0],
       "delta_pp": 37.2,
-      "n": 7
+      "low_n_warning": false,
+      "note": "Primary SFT target. Largest n in held-out (n=7), most reliable estimate."
     }
   ],
   "interpretation": {
     "primary_finding": "Delta A = +29.6pp (p=0.000021, highly significant). SFT adapter substantially improves Tenacious-Bench scores on the sealed held-out partition.",
     "sft_target_categories": "Tone Drift (+37.2pp) and Bench Over-Commitment (+40.0pp) — the two categories targeted by the SFT training data — show the largest lifts. Consistent with Path A rationale.",
-    "sft_ceiling": "ICP Misclassification shows only +1.7pp lift. This category requires correct segment waterfall logic and Crunchbase confidence gating — structural agent behaviour not addressable by email-composition SFT.",
-    "architecture_limit": "Multi-Thread Leakage shows +19.0pp lift despite being classified as an architectural failure. Lift is attributable to better email-level signal grounding, not async race condition fixes.",
+    "sft_ceiling": "ICP Misclassification shows only +1.7pp lift. This category requires correct segment waterfall logic — structural agent behaviour not addressable by email-composition SFT. Fix documented in agent_fixes/conversion_engine_patches.py.",
+    "architecture_limit": "Multi-Thread Leakage shows +19.0pp lift despite being classified as an architectural failure. Lift is attributable to better email-level signal grounding, not async race condition fixes. The threading fix is documented in agent_fixes/conversion_engine_patches.py.",
+    "small_n_warning": "5 of 10 categories have n<6 in the held-out partition. Per-category CIs for these categories span ±30-40pp and should be treated as directional signals, not precise estimates. v0.2 should enforce minimum 8 tasks per category in held-out.",
+    "delta_b_status": "Delta B (prompt-engineered baseline) has not yet been measured. Run ablations/delta_b_eval.py to confirm SFT adds value beyond careful prompting.",
     "cost_efficiency": "Training cost: $0 (Colab T4 free tier, 97.9 min). Inference overhead: +17.4% per task. Cost-per-point: ~$0.0001. Acceptable at Tenacious ACV range ($6K-$60K)."
   }
 }

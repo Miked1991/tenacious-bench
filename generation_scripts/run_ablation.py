@@ -87,6 +87,35 @@ def category_means(tasks: List[Dict], scores: List[float]) -> Dict[str, Dict]:
     }
 
 
+def category_bootstrap_ci(
+    tasks: List[Dict],
+    scores: List[float],
+    n_iter: int = BOOTSTRAP_N,
+) -> Dict[str, Tuple[float, float]]:
+    """95% bootstrap CI on the mean score for each category.
+
+    Categories with n < 6 have wide CIs and should be interpreted
+    as directional only (±30pp or more at n=4).
+    """
+    by_cat: Dict[str, List[float]] = {}
+    for task, score in zip(tasks, scores):
+        by_cat.setdefault(task.get("category", "unknown"), []).append(score)
+
+    rng = random.Random(SEED)
+    result: Dict[str, Tuple[float, float]] = {}
+    for cat, cat_scores in sorted(by_cat.items()):
+        n = len(cat_scores)
+        boot = []
+        for _ in range(n_iter):
+            sample = [rng.choice(cat_scores) for _ in range(n)]
+            boot.append(sum(sample) / n * 100)
+        boot.sort()
+        lo = boot[int(0.025 * n_iter)]
+        hi = boot[int(0.975 * n_iter)]
+        result[cat] = (round(lo, 1), round(hi, 1))
+    return result
+
+
 # ── Statistics ────────────────────────────────────────────────────────────────
 
 def _normal_sf(z: float) -> float:
@@ -162,14 +191,16 @@ def _text_report(
     ]
     if cat_trained:
         lines.append("")
-        lines.append("Per-category breakdown (baseline → trained, n tasks):")
+        lines.append("Per-category breakdown (baseline → trained, 95% CI, n tasks):")
+        lines.append("  ⚠ Categories with n<6 have wide CIs — treat as directional only.")
         for cat in sorted(set(cat_base) | set(cat_trained)):
             b = cat_base.get(cat, {})
             t = cat_trained.get(cat, {})
             bm = b.get("mean", 0.0)
             tm = t.get("mean", 0.0)
             nb = b.get("n", 0)
-            lines.append(f"  {cat:<35}: {bm:5.1f}% → {tm:5.1f}%  ({tm - bm:+.1f}pp, n={nb})")
+            warn = " ⚠ low-n" if nb < 6 else ""
+            lines.append(f"  {cat:<35}: {bm:5.1f}% → {tm:5.1f}%  ({tm - bm:+.1f}pp, n={nb}){warn}")
         lines.append("=" * 55)
     return "\n".join(lines) + "\n"
 
@@ -227,17 +258,27 @@ def main() -> None:
     else:
         print("No --trained_outputs. Reporting baseline only.")
 
+    # Per-category CIs (Gap 5 fix: small n categories have wide uncertainty)
+    base_cat_ci    = category_bootstrap_ci(tasks, base_scores)
+    trained_cat_ci = category_bootstrap_ci(tasks, trained_scores) if trained_scores else {}
+
     # Per-category table
     per_category = []
     for cat in sorted(set(cat_base) | set(cat_trained)):
+        n_tasks = cat_base.get(cat, {}).get("n", cat_trained.get(cat, {}).get("n", 0))
+        b_ci = base_cat_ci.get(cat, (0.0, 0.0))
+        t_ci = trained_cat_ci.get(cat, (0.0, 0.0))
         entry: Dict = {
             "category": cat,
-            "n": cat_base.get(cat, {}).get("n", cat_trained.get(cat, {}).get("n", 0)),
+            "n": n_tasks,
             "baseline": cat_base.get(cat, {}).get("mean", 0.0),
+            "baseline_ci_95": list(b_ci),
             "trained": cat_trained.get(cat, {}).get("mean", 0.0),
+            "trained_ci_95": list(t_ci),
             "delta_pp": round(
                 cat_trained.get(cat, {}).get("mean", 0.0) - cat_base.get(cat, {}).get("mean", 0.0), 1
             ),
+            "low_n_warning": n_tasks < 6,
         }
         per_category.append(entry)
 

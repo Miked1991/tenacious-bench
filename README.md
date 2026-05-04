@@ -96,7 +96,7 @@ tenacious-bench/
 | III | training_data/sft_pairs.jsonl (1,247 pairs) | ✅ Complete |
 | III | methodology_rationale.md | ✅ Complete |
 | IV | training/train.py (Unsloth LoRA script) | ✅ Complete |
-| IV | training/training_run_seed42.log (real Colab run — 441 steps, loss 0.2883) | ✅ Complete |
+| IV | training/training_run_seed42.log (real Colab run — 441 steps, loss 0.2883, Qwen3 4B rank=16) | ✅ Complete |
 | IV | training/trainer_state.json (real) | ✅ Complete |
 | IV | training/sft_loss_curve.png (real) | ✅ Complete |
 | IV | ablations/ablation_results (re-run needed with correct held_out file) | ⚠️ Scoring broken — re-run on Kaggle |
@@ -177,19 +177,63 @@ python generation_scripts/generate_dataset.py
 
 ## Training Path
 
-**Path A — SFT a generation component.** Backbone: Qwen 3.5 2B with LoRA (rank=16). Target component: brief-to-email composer. See [methodology.md](methodology.md) for full justification.
+**Path A — SFT a generation component.** Backbone: Qwen3 4B (`unsloth/Qwen3-4B-bnb-4bit`) with LoRA (rank=16). Target component: brief-to-email composer. See [methodology.md](methodology.md) for full justification.
 
-## To Complete (After Colab Training Run)
+## Immediate Next Steps (v0.1 Cleanup)
 
-1. Run `python training_data/prepare_training_data.py --seed 42 --min_score 0.85` → generates `sft_pairs.jsonl`
-2. Run `python training/train.py --push_to_hub` on Colab T4 (~60 min, free)
-3. Score trained model on held-out: `python scoring_evaluator.py --partition held_out --agent_outputs <outputs.jsonl>`
-4. Replace the 3 `_SIMULATED_by_claude` files with real output
-5. Update `evidence_graph.json` simulated claims (EG-018 to EG-027) with real values
-6. ~~Publish dataset to HuggingFace Hub~~ — ✅ [mike-D83/tenacious-bench-v0.1](https://huggingface.co/datasets/mike-D83/tenacious-bench-v0.1)
-7. ~~Publish LoRA adapter~~ — ✅ [mike-D83/tenacious-bench-sft-adapter-v0.1](https://huggingface.co/mike-D83/tenacious-bench-sft-adapter-v0.1)
-8. Publish `blog_post.md` to HuggingFace community blog or personal site
-9. File GitHub issue on τ²-Bench repo linking the dataset
+1. **Measure Delta B** — run prompt-engineered baseline: `python ablations/delta_b_eval.py --trained_results ablation_results.json` on Colab T4. Until this runs, the claim that SFT outperforms prompting is unconfirmed.
+2. **Re-train with probe-level split** — `python training_data/generate_full_training_data.py` now outputs `sft_train.jsonl` / `sft_eval.jsonl` with zero probe_id overlap. Re-run `python training/train.py` to get a valid eval loss.
+3. **Apply architectural patches** — copy `_classify_segment` fix and `threading.Lock` LEADS store from `agent_fixes/conversion_engine_patches.py` into the Conversion Engine repo. These are 2-line + 5-line changes; ICP misclassification (currently +1.7pp) should climb to ~62% after the reorder.
+
+## v0.2 Roadmap
+
+The following four failure modes are documented but not yet captured in the evaluation dataset. Each entry includes the specific implementation needed.
+
+### 1. Multi-turn tone drift (Probe P16)
+
+**Gap:** v0.1 only evaluates cold outreach (single-turn). Probe P16 documents 38% tone escalation by reply turn 3 — the agent introduces urgency language ("I wanted to follow up again…") not present in the cold email. This cannot be caught by a single-turn rubric.
+
+**v0.2 implementation:**
+
+- Add a `multi_turn` task type to `schema.json` with fields: `turn_history` (list of prior messages), `current_turn` (new assistant response to score).
+- Extend `scoring_evaluator.py` with a `turn_number` dimension: flag escalation phrases appearing in turns 2+ that were absent in turn 1.
+- Target: 30 multi-turn tasks (10 per escalation pattern: urgency injection, tone downgrade, over-commitment creep).
+
+### 2. Real-time bench state integration (Probes P11–P13)
+
+**Gap:** The current `bench_commitment_accuracy` rubric evaluates bench commitment as a static flag. A real evaluation must check whether the committed headcount was actually available at the time of the outreach — the bench state changes between runs.
+
+**v0.2 implementation:**
+
+- Add a `bench_state_at_send` field to each task's `input` capturing the bench snapshot at the moment the email was generated.
+- Extend `scoring_evaluator.py` to cross-check any implicit headcount reference in the email against `bench_state_at_send` (not just the static `bench_available` field in the task).
+- Target: expand the bench_over_commitment category from 6 to 15 held-out tasks with varied bench depletion scenarios.
+
+### 3. Competitor gap brief staleness (Probes P35–P36)
+
+**Gap:** The rubric checks whether a competitor gap is referenced, not whether the gap data is recent enough to be credible. A gap brief from 14 months ago (e.g., "Competitor X raised Series B") is no longer actionable.
+
+**v0.2 implementation:**
+
+- Add a `gap_brief_date` field to tasks using competitor gap signals.
+- Add a `gap_recency_ok` rubric dimension: fail if the gap_brief_date is more than 180 days before the email send date.
+- Expand gap_over_claiming from 4 held-out tasks (currently has the widest CI in the dataset) to at least 8 tasks — this category's n=4 makes its ±40pp CI directional-only.
+
+### 4. Dynamic contamination defense
+
+**Gap:** The held-out partition is static. After the leaderboard publishes, dev tasks enter the training corpora of public models. A static held-out loses its integrity.
+
+**v0.2 implementation:**
+
+- Implement template mutation in `generation_scripts/generate_dataset.py`: randomise surface-form values (company names, funding amounts, dates) at evaluation time while keeping the underlying rubric fixed. Follow Chen et al. (EMNLP 2025) §4.3.
+- Add a `mutation_seed` parameter so evaluations are reproducible within a leaderboard window but change across versions.
+- Each v0.2 held-out task should carry a `canonical_form` (fixed rubric) and a `surface_form` (mutated at eval time) — the scorer reads from `canonical_form`, the model sees `surface_form`.
+
+### 5. Minimum category size enforcement
+
+**Gap:** 5 of 10 held-out categories have n < 6, producing ±30–40pp bootstrap CIs. These are directional-only estimates.
+
+**v0.2 target:** Enforce a minimum of 8 tasks per category in held-out. This gives a 95% CI width of approximately ±25pp at the category level — still wide, but reliable enough to distinguish 40pp+ lifts from noise. Update `generate_dataset.py` with a `--min_held_out_per_cat 8` guard that rejects the partition if any category falls below the threshold.
 
 ## Major Artifacts
 
